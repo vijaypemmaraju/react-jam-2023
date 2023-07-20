@@ -8,7 +8,7 @@ type Store = {
   setDestination: (x: number, y: number) => void;
 }
 
-const useStore = create<Store>((set, get) => ({
+const useStore = create<Store>((set, _get) => ({
   destination: null,
   setDestination: ( x, y) => set({ destination: { x, y } })
 }));

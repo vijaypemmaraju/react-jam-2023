@@ -1,12 +1,15 @@
 import { Stage } from "@pixi/react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import "./index.css";
 
 export const MyComponent = () => {
   return (
-    <Stage>
+    <>
+    <Stage width={window.innerWidth} height={window.innerHeight}>
       <App />
     </Stage>
+    </>
   );
 };
 

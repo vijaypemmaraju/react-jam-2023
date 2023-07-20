@@ -1,6 +1,5 @@
-import { BlurFilter } from "pixi.js";
-import { Stage, Container, Sprite, Text, useTick, useApp } from "@pixi/react";
-import { useEffect, useMemo, useState } from "react";
+import { Sprite, useTick, useApp } from "@pixi/react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import useStore from "./useStore";
 
@@ -13,7 +12,7 @@ function App() {
 
   useEffect(() => {
     const root = document.querySelector("canvas");
-    const listener = (e) => {
+    const listener = (e: MouseEvent) => {
       const rect = root?.getBoundingClientRect();
       const x = e.clientX - (rect?.left || 0);
       const y = e.clientY - (rect?.top || 0);
