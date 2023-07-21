@@ -180,8 +180,8 @@ const useStore = create<Store>((set, get) => ({
         const rotation = Math.atan2(velocity.y, velocity.x);
 
         bird.position = {
-          x: position.x + velocity.x * delta * 20,
-          y: position.y + velocity.y * delta * 20,
+          x: position.x + velocity.x * delta * (20 + Math.random() - 0.5),
+          y: position.y + velocity.y * delta * (20 + Math.random() - 0.5),
         };
         bird.velocity = velocity;
         bird.lastVelocity = velocity;
