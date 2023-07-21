@@ -1,6 +1,6 @@
 import { Sprite, useTick, useApp } from "@pixi/react";
-import { BlurFilter } from "pixi.js";
-import { useEffect, useState } from "react";
+import { BlurFilter, Point, Sprite as PixiSprite } from "pixi.js";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import useStore from "./useStore";
 
@@ -14,15 +14,14 @@ function App() {
   const setBirds = useStore((state) => state.setBirds);
   const updateBirds = useStore((state) => state.updateBirds);
 
-  // useEffect(() => {
-  //   const handler = () => {
-  //     app.renderer.resize(window.innerWidth, window.innerHeight);
-  //   };
-  //   window.addEventListener('resize', handler);
+  const viewport = useStore((state) => state.viewport);
 
-  //   return () =>
-  //     window.removeEventListener('resize', handler);
-  // }, [app]);
+  useEffect(() => {
+    viewport?.follow(ref.current!, {
+      acceleration: 5,
+      speed: 7,
+    });
+  }, [viewport]);
 
   useEffect(() => {
     setBirds((birds) => {
@@ -50,24 +49,40 @@ function App() {
     });
   }, [app, setBirds]);
 
-  useEffect(() => {
-    const root = document.querySelector("canvas");
-    const listener = (e: MouseEvent) => {
-      const rect = root?.getBoundingClientRect();
-      const x = e.clientX - (rect?.left || 0);
-      const y = e.clientY - (rect?.top || 0);
-      setPlayer((player) => {
-        player.destination = { x, y };
-      });
-    };
-    document.addEventListener("mousemove", listener);
+  const ref = useRef<PixiSprite | undefined>();
 
-    return () => {
-      document.removeEventListener("mousemove", listener);
-    };
-  }, [app, player, setPlayer]);
+  // useEffect(() => {
+  //   const root = document.querySelector("canvas");
+  //   const listener = (e: MouseEvent) => {
+  //     const rect = root?.getBoundingClientRect();
+  //     const pos = viewport?.toLocal(new Point(e.clientX, e.clientY));
+  //     const x = (pos?.x || 0) - (rect?.x || 0);
+  //     const y = (pos?.y || 0) - (rect?.y || 0);
+  //     console.log(pos);
+
+  //     setPlayer((player) => {
+  //       player.destination = { x, y };
+  //     });
+  //   };
+  //   document.addEventListener("mousemove", listener);
+
+  //   return () => {
+  //     document.removeEventListener("mousemove", listener);
+  //   };
+  // }, [app, player, setPlayer, viewport]);
 
   useTick((delta) => {
+    const root = document.querySelector("canvas");
+    const pointer = app.renderer.plugins.interaction.pointer;
+    const rect = root?.getBoundingClientRect();
+    const pos = viewport?.toLocal(new Point(pointer.x, pointer.y));
+    const x = (pos?.x || 0) - (rect?.x || 0);
+    const y = (pos?.y || 0) - (rect?.y || 0);
+    console.log(pos);
+
+    setPlayer((player) => {
+      player.destination = { x, y };
+    });
     updatePlayer(delta);
     updateBirds(delta);
   });
@@ -82,6 +97,7 @@ function App() {
         scale={{ x: 2, y: 2 }}
       />
       <Sprite
+        ref={ref}
         image="public/jay.png"
         x={player.position.x}
         y={player.position.y}

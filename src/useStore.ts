@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { produce } from "immer";
-import { PLAYER_SPEED, WEIGHTS } from "./constants";
+import { PLAYER_SPEED } from "./constants";
+import { Viewport as PixiViewport } from "pixi-viewport";
 
 type GameObject = {
   position: { x: number; y: number };
@@ -17,9 +18,29 @@ type Store = {
   setBirds: (fn: (draft: Store["birds"]) => void) => void;
   updatePlayer: (delta: number) => void;
   updateBirds: (delta: number) => void;
+  viewport: PixiViewport | null;
+  setViewport: (viewport: PixiViewport) => void;
+  WEIGHTS: {
+    PLAYER_ATTRACTION: number;
+    CENTER_OF_SCREEN_ATTRACTION: number;
+    ATTRACTION_RADIUS: number;
+    FORCE_RADIUS: number;
+    COHESION: number;
+    ALIGNMENT: number;
+    SEPARATION: number;
+  };
 };
 
 const useStore = create<Store>((set, get) => ({
+  WEIGHTS: {
+    PLAYER_ATTRACTION: 20,
+    CENTER_OF_SCREEN_ATTRACTION: 1,
+    ATTRACTION_RADIUS: 400,
+    FORCE_RADIUS: 400,
+    COHESION: 1,
+    ALIGNMENT: 5,
+    SEPARATION: 50,
+  },
   player: {
     position: { x: 400, y: 270 },
     velocity: { x: 0, y: 0 },
@@ -74,7 +95,7 @@ const useStore = create<Store>((set, get) => ({
     });
   },
   updateBirds: (delta: number) => {
-    const { player, setBirds } = get();
+    const { player, setBirds, WEIGHTS } = get();
     setBirds((birds) => {
       let bird,
         position,
@@ -88,7 +109,7 @@ const useStore = create<Store>((set, get) => ({
         velocityLength,
         rotation;
       let cohesion, alignment, separation, distance;
-      let center = { x: 0, y: 0 };
+      const center = { x: 0, y: 0 };
       const root = document.querySelector("canvas");
       const rect = root!.getBoundingClientRect();
       center.x = rect.width / 2;
@@ -107,7 +128,7 @@ const useStore = create<Store>((set, get) => ({
         attractionLength = Math.sqrt(
           Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
-        if (attractionLength > WEIGHTS.ATTRACTION_RADIUS()) {
+        if (attractionLength > WEIGHTS.ATTRACTION_RADIUS) {
           playerAttraction.x = 0;
           playerAttraction.y = 0;
         }
@@ -128,7 +149,7 @@ const useStore = create<Store>((set, get) => ({
               Math.pow(birds[j].position.x - position.x, 2) +
                 Math.pow(birds[j].position.y - position.y, 2)
             );
-            if (distance < WEIGHTS.FORCE_RADIUS()) {
+            if (distance < WEIGHTS.FORCE_RADIUS) {
               cohesion.x += birds[j].position.x;
               cohesion.y += birds[j].position.y;
 
@@ -204,6 +225,8 @@ const useStore = create<Store>((set, get) => ({
       }
     });
   },
+  viewport: null,
+  setViewport: (viewport) => set({ viewport }),
 }));
 
 export default useStore;
