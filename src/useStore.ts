@@ -101,7 +101,7 @@ const useStore = create<Store>((set, get) => ({
     }
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
-    player.emitter!.particlesPerWave = 5;
+    player.emitter!.particlesPerWave = 10;
 
     player.emitter!.spawnPos.x =
       position.x -
@@ -126,7 +126,7 @@ const useStore = create<Store>((set, get) => ({
         (length - WEIGHTS.HIGH_SPEED_THRESHOLD) / WEIGHTS.HIGH_SPEED_THRESHOLD,
         0
       ) +
-      Math.min(player.torque, 0.1) * 2;
+      Math.min(player.torque, 0.0) * 2;
 
     setPlayer((player) => {
       player.position = {
