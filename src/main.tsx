@@ -6,7 +6,7 @@ import useStore from "./useStore";
 import Viewport from "./Viewport";
 import Emitter from "./Emitter";
 import { EmitterConfigV3 } from "@pixi/particle-emitter";
-import { Texture } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
@@ -140,4 +140,7 @@ container.id = "root";
 document.body.appendChild(container);
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 
-root.render(<MyComponent />);
+Promise.all([
+  Assets.load("jay_sheet.json"),
+  Assets.load("female_jay_sheet.json"),
+]).then(() => root.render(<MyComponent />));

@@ -33,7 +33,8 @@ const PixiComponentViewport = PixiComponent("Viewport", {
     viewport.zoom(0.5, true);
     useStore.getState().setViewport(viewport);
 
-    return viewport;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return viewport as any;
   },
 });
 

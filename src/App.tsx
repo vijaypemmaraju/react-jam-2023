@@ -1,7 +1,7 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { AnimatedSprite, Sprite, useTick, useApp } from "@pixi/react";
 import { BlurFilter, Point, Sprite as PixiSprite, Texture } from "pixi.js";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Birds from "./Bird";
 import Emitter from "./Emitter";
@@ -9,9 +9,6 @@ import { emitterConfig } from "./main";
 import useStore from "./useStore";
 
 import { Assets } from 'pixi.js';
-
-const sheet = await Assets.load('public/jay_sheet.json');
-const frames = Object.keys(sheet.data.frames).map(frame => Texture.from(frame));
 
 function App() {
   const player = useStore((state) => state.player);
@@ -21,8 +18,16 @@ function App() {
 
   const viewport = useStore((state) => state.viewport);
 
+  const [frames, setFrames] = useState<Texture[]>([]);
+
   useEffect(() => {
-    console.log(app.loader);
+    (async () => {
+      const sheet = Assets.get("jay_sheet.json");
+      const frames = Object.keys(sheet.data.frames).map((frame) =>
+        Texture.from(frame)
+      );
+      setFrames(frames);
+    })();
   }, []);
 
   useEffect(() => {
@@ -48,10 +53,12 @@ function App() {
     updatePlayer(delta);
   });
 
+  if (frames.length === 0) return null;
+
   return (
     <>
       <Sprite
-        image="public/elevatelol_top_down_pixel_art_town_view_from_directly_above_07128aeb-caed-4289-8d96-4f9a8f86d0e4.png"
+        image="elevatelol_top_down_pixel_art_town_view_from_directly_above_07128aeb-caed-4289-8d96-4f9a8f86d0e4.png"
         x={0}
         y={0}
         filters={[new BlurFilter(16, 16)]}
@@ -61,7 +68,8 @@ function App() {
         player.emitter = emitter;
       })} />
       <AnimatedSprite
-        ref={ref}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ref={ref as any}
         isPlaying
         animationSpeed={Math.min(0.5, (1 - Math.pow(player.acceleration, 2)))}
         textures={frames}

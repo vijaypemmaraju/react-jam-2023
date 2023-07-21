@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { PixiComponent } from "@pixi/react";
-import { Container, Texture } from "pixi.js";
-import useStore from "./useStore";
+import { Container } from "pixi.js";
 
 const Emitter = PixiComponent("Emitter", {
   create() {
@@ -10,7 +10,7 @@ const Emitter = PixiComponent("Emitter", {
   applyProps(instance, oldProps, newProps) {
     const { config, onCreate } = newProps;
 
-    let emitter = this._emitter;
+    let emitter = (this as any)._emitter;
 
     if (!emitter) {
       emitter = new PixiEmitter(
@@ -30,13 +30,13 @@ const Emitter = PixiComponent("Emitter", {
       };
 
       emitter.emit = true;
-      this._emitter = emitter;
+      (this as any)._emitter = emitter;
       onCreate?.(emitter);
       t();
     }
   },
   willUnmount() {
-    const emitter = this._emitter;
+    const emitter = (this as any)._emitter;
     if (emitter) {
       emitter.emit = false;
       cancelAnimationFrame(emitter.raf);
