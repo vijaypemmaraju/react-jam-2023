@@ -71,13 +71,13 @@ function App() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         isPlaying
-        animationSpeed={Math.min(0.5, (1 - Math.pow(player.acceleration, 2)))}
+        animationSpeed={Math.min(0.5, (1 - Math.pow(Math.min(player.acceleration / 250, 250), 2)))}
         textures={frames}
         x={player.position.x}
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
-        scale={{ x: 1 + Math.min((player.acceleration || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 1, 0.5) }}
+        scale={{ x: 1 + Math.min((player.acceleration * .02 || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
       />
       <Birds />
     </>

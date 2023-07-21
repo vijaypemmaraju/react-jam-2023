@@ -36,6 +36,7 @@ type Store = {
     COHESION: number;
     ALIGNMENT: number;
     SEPARATION: number;
+    HIGH_SPEED_THRESHOLD: number;
   };
 };
 
@@ -48,6 +49,7 @@ const useStore = create<Store>((set, get) => ({
     COHESION: 5,
     ALIGNMENT: 5,
     SEPARATION: 100,
+    HIGH_SPEED_THRESHOLD: 250,
   },
   player: {
     position: { x: 400, y: 270 },
@@ -73,7 +75,7 @@ const useStore = create<Store>((set, get) => ({
       })
     ),
   updatePlayer: (delta: number) => {
-    const { player, setPlayer } = get();
+    const { player, setPlayer, WEIGHTS } = get();
     const { position, destination, lastVelocity } = player;
     const newVelocity = {
       x: destination.x - position.x,
@@ -100,7 +102,7 @@ const useStore = create<Store>((set, get) => ({
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
     player.emitter!.particlesPerWave = 5;
-    // spawn to the left and right of the player
+
     player.emitter!.spawnPos.x =
       position.x -
       Math.cos(rotation + Math.PI / 4) * 16 -
@@ -120,7 +122,11 @@ const useStore = create<Store>((set, get) => ({
       Math.sin(rotation) * 4;
     player.emitter!.emitNow();
     player.emitter!.spawnChance =
-      Math.max((length - 250) / 250, 0) + Math.min(player.torque, 0.1) * 2;
+      Math.max(
+        (length - WEIGHTS.HIGH_SPEED_THRESHOLD) / WEIGHTS.HIGH_SPEED_THRESHOLD,
+        0
+      ) +
+      Math.min(player.torque, 0.1) * 2;
 
     setPlayer((player) => {
       player.position = {
@@ -140,7 +146,7 @@ const useStore = create<Store>((set, get) => ({
       player.rotation = rotation;
       player.torque = Math.abs(player.rotation - (player.lastRotation || 0));
       player.lastRotation = rotation;
-      player.acceleration = velocityMagnitude;
+      player.acceleration = length;
     });
   },
   updateBirds: (delta: number) => {
@@ -180,6 +186,10 @@ const useStore = create<Store>((set, get) => ({
         if (attractionLength > WEIGHTS.ATTRACTION_RADIUS) {
           playerAttraction.x = 0;
           playerAttraction.y = 0;
+        }
+        if (player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD) {
+          playerAttraction.x *= -10;
+          playerAttraction.y *= -10;
         }
 
         centerOfScreenAttraction = {
@@ -225,13 +235,17 @@ const useStore = create<Store>((set, get) => ({
 
         newVelocity = {
           x:
-            playerAttraction.x * WEIGHTS.PLAYER_ATTRACTION +
+            playerAttraction.x *
+              (player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 10 : 1) *
+              WEIGHTS.PLAYER_ATTRACTION +
             centerOfScreenAttraction.x * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.x * WEIGHTS.COHESION +
             alignment.x * WEIGHTS.ALIGNMENT +
             separation.x * WEIGHTS.SEPARATION,
           y:
-            playerAttraction.y * WEIGHTS.PLAYER_ATTRACTION +
+            playerAttraction.y *
+              (player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 100 : 1) *
+              WEIGHTS.PLAYER_ATTRACTION +
             centerOfScreenAttraction.y * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.y * WEIGHTS.COHESION +
             alignment.y * WEIGHTS.ALIGNMENT +
@@ -265,21 +279,30 @@ const useStore = create<Store>((set, get) => ({
         rotation = Math.atan2(velocity.y, velocity.x);
 
         bird.position = {
-          x: position.x + velocity.x * delta * (25 + Math.random() - 0.5),
-          y: position.y + velocity.y * delta * (25 + Math.random() - 0.5),
+          x:
+            position.x +
+            velocity.x *
+              delta *
+              ((player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 50 : 25) +
+                Math.random() -
+                0.5),
+          y:
+            position.y +
+            velocity.y *
+              delta *
+              ((player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 50 : 25) +
+                Math.random() -
+                0.5),
         };
         bird.velocity = velocity;
         bird.lastVelocity = velocity;
         bird.rotation = rotation;
         bird.torque = Math.abs(bird.rotation - (bird.lastRotation || 0));
         bird.lastRotation = rotation;
-
-        const velocityMagnitude = Math.sqrt(
-          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
-        );
+        bird.acceleration = length;
 
         bird.emitter?.rotate(rotation + Math.PI);
-        // spawn to the left and right of the player
+
         bird.emitter!.spawnPos.x =
           position.x -
           Math.cos(rotation + Math.PI / 4) * 16 -

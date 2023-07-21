@@ -77,20 +77,14 @@ function Birds() {
           />
           <AnimatedSprite
             isPlaying
-            animationSpeed={
-              Math.min(0.1, 1 - Math.pow(bird.acceleration, 2)) +
-              Math.random() * 0.1
-            }
+            animationSpeed={Math.min(0.5, (1 - Math.pow(Math.min(bird.acceleration / 250, 250), 2)))}
             textures={frames}
             tint={bird.tint}
             x={bird.position.x}
             y={bird.position.y}
             rotation={bird.rotation}
             anchor={{ x: 0.5, y: 0.5 }}
-            scale={{
-              x: 1 + Math.min((bird.acceleration || 0) * 0.1, 1),
-              y: 1 - Math.min((bird.torque || 0) * 1, 0.5),
-            }}
+            scale={{ x: 1 + Math.min((bird.acceleration * .001 || 0) * .1, .1), y: 1 - Math.min((bird.torque || 0) * 2, 0.5) }}
           />
         </Fragment>
       ))}
