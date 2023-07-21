@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { produce } from "immer";
-import { WEIGHTS } from "./constants";
+import { PLAYER_SPEED, WEIGHTS } from "./constants";
 
 type GameObject = {
   position: { x: number; y: number };
@@ -65,8 +65,8 @@ const useStore = create<Store>((set, get) => ({
 
     setPlayer((player) => {
       player.position = {
-        x: position.x + velocity.x * delta * 20,
-        y: position.y + velocity.y * delta * 20,
+        x: position.x + velocity.x * delta * PLAYER_SPEED,
+        y: position.y + velocity.y * delta * PLAYER_SPEED,
       };
       player.velocity = velocity;
       player.lastVelocity = velocity;
@@ -88,7 +88,7 @@ const useStore = create<Store>((set, get) => ({
           Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
 
-        if (attractionLength > WEIGHTS.ATTRACTION_RADIUS) {
+        if (attractionLength > WEIGHTS.ATTRACTION_RADIUS()) {
           playerAttraction.x = 0;
           playerAttraction.y = 0;
         }
@@ -173,15 +173,24 @@ const useStore = create<Store>((set, get) => ({
         newVelocity.y /= length;
 
         const velocity = {
-          x: lastVelocity.x * 0.99 + newVelocity.x * 0.01,
-          y: lastVelocity.y * 0.99 + newVelocity.y * 0.01,
+          x: lastVelocity.x * 0.985 + newVelocity.x * 0.015,
+          y: lastVelocity.y * 0.985 + newVelocity.y * 0.015,
         };
+
+        const velocityLength = Math.sqrt(
+          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
+        );
+        velocity.x /= velocityLength;
+        velocity.y /= velocityLength;
+
+        velocity.x *= 0.25;
+        velocity.y *= 0.25;
 
         const rotation = Math.atan2(velocity.y, velocity.x);
 
         bird.position = {
-          x: position.x + velocity.x * delta * (20 + Math.random() - 0.5),
-          y: position.y + velocity.y * delta * (20 + Math.random() - 0.5),
+          x: position.x + velocity.x * delta * (25 + Math.random() - 0.5),
+          y: position.y + velocity.y * delta * (25 + Math.random() - 0.5),
         };
         bird.velocity = velocity;
         bird.lastVelocity = velocity;

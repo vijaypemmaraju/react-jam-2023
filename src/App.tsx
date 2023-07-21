@@ -14,6 +14,16 @@ function App() {
   const updateBirds = useStore((state) => state.updateBirds);
 
   useEffect(() => {
+    const handler = () => {
+      app.renderer.resize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', handler);
+
+    return () =>
+      window.removeEventListener('resize', handler);
+  }, [app]);
+
+  useEffect(() => {
     setBirds((birds) => {
       for (let i = 0; i < 10; i++) {
         birds.push({

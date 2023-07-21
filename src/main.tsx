@@ -6,9 +6,9 @@ import "./index.css";
 export const MyComponent = () => {
   return (
     <>
-    <Stage width={window.innerWidth} height={window.innerHeight}>
-      <App />
-    </Stage>
+      <Stage width={window.innerWidth} height={window.innerHeight}>
+        <App />
+      </Stage>
     </>
   );
 };
