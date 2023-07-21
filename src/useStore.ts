@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { produce } from "immer";
 import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
+import { Emitter } from "@pixi/particle-emitter";
 
 type GameObject = {
   position: { x: number; y: number };
@@ -9,6 +10,10 @@ type GameObject = {
   lastVelocity: { x: number; y: number };
   destination: { x: number; y: number };
   rotation: number;
+  lastRotation?: number;
+  torque?: number;
+  emitter?: Emitter;
+  speedBoost?: number;
 };
 
 type Store = {
@@ -33,19 +38,20 @@ type Store = {
 
 const useStore = create<Store>((set, get) => ({
   WEIGHTS: {
-    PLAYER_ATTRACTION: 20,
+    PLAYER_ATTRACTION: 10,
     CENTER_OF_SCREEN_ATTRACTION: 1,
-    ATTRACTION_RADIUS: 400,
+    ATTRACTION_RADIUS: 300,
     FORCE_RADIUS: 400,
-    COHESION: 1,
+    COHESION: 5,
     ALIGNMENT: 5,
-    SEPARATION: 50,
+    SEPARATION: 100,
   },
   player: {
     position: { x: 400, y: 270 },
     velocity: { x: 0, y: 0 },
     lastVelocity: { x: 0, y: 0 },
     destination: { x: 400, y: 270 },
+    speedBoost: 1,
     rotation: 0,
   },
   setPlayer: (fn) =>
@@ -81,17 +87,41 @@ const useStore = create<Store>((set, get) => ({
       x: lastVelocity.x * 0.97 + newVelocity.x * 0.03,
       y: lastVelocity.y * 0.97 + newVelocity.y * 0.03,
     };
+    const velocityMagnitude = Math.sqrt(
+      Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
+    );
 
     const rotation = Math.atan2(velocity.y, velocity.x);
+    player.emitter?.rotate(rotation + Math.PI);
+    if (velocityMagnitude > 0.85) {
+      // spawn to the left and right of the player
+      player.emitter!.spawnPos.x =
+        position.x - Math.cos(rotation + Math.PI / 2) * 8;
+      player.emitter!.spawnPos.y =
+        position.y - Math.sin(rotation - Math.PI / 2) * 8;
+      player.emitter!.emitNow();
+
+      player.emitter!.spawnPos.x =
+        position.x - Math.cos(rotation - Math.PI / 2) * 8;
+      player.emitter!.spawnPos.y =
+        position.y - Math.sin(rotation - Math.PI / 2) * 8;
+      player.emitter!.emitNow();
+    }
 
     setPlayer((player) => {
       player.position = {
-        x: position.x + velocity.x * delta * PLAYER_SPEED,
-        y: position.y + velocity.y * delta * PLAYER_SPEED,
+        x:
+          position.x +
+          velocity.x * delta * (PLAYER_SPEED * (player.speedBoost || 1)),
+        y:
+          position.y +
+          velocity.y * delta * (PLAYER_SPEED * (player.speedBoost || 1)),
       };
       player.velocity = velocity;
       player.lastVelocity = velocity;
       player.rotation = rotation;
+      player.torque = Math.abs(player.rotation - (player.lastRotation || 0));
+      player.lastRotation = rotation;
     });
   },
   updateBirds: (delta: number) => {
@@ -222,6 +252,20 @@ const useStore = create<Store>((set, get) => ({
         bird.velocity = velocity;
         bird.lastVelocity = velocity;
         bird.rotation = rotation;
+        bird.torque = Math.abs(bird.rotation - (bird.lastRotation || 0));
+        bird.lastRotation = rotation;
+
+        const velocityMagnitude = Math.sqrt(
+          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
+        );
+
+        if (velocityMagnitude > 0.2) {
+          bird.emitter!.spawnPos.x = position.x - newVelocity.x * 50;
+          bird.emitter!.spawnPos.y = position.y - newVelocity.y * 50;
+          bird.emitter?.rotate(rotation + Math.PI);
+          bird.emitter!.spawnChance = 0.01;
+          bird.emitter!.emitNow();
+        }
       }
     });
   },
