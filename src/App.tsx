@@ -1,14 +1,13 @@
-import { Bezier, Point } from "bezier-js";
-
 import { Sprite, useTick, useApp } from "@pixi/react";
 import { useEffect, useState } from "react";
 import "./App.css";
-import useStore from "./useStore";
 
 function App() {
   // const blurFilter = useMemo(() => new BlurFilter(4), []);
   const [position, setPosition] = useState({ x: 400, y: 270 });
-  const [curve, setCurve] = useState<Point[]>();
+  const [destination, setDestination] = useState({ x: 400, y: 270 });
+  const [lastVelocity, setLastVelocity] = useState({ x: 0, y: 0 });
+  // const [curve, setCurve] = useState<Point[]>();
   const app = useApp();
 
   useEffect(() => {
@@ -17,47 +16,39 @@ function App() {
       const rect = root?.getBoundingClientRect();
       const x = e.clientX - (rect?.left || 0);
       const y = e.clientY - (rect?.top || 0);
-      const length = Math.sqrt(
-        Math.pow(position.x - x, 2) + Math.pow(position.y - y, 2)
-      );
-      const curveAmount = length / 4;
-      const bezier =
-        new Bezier([
-          { x: position.x, y: position.y },
-          // choose a random point near the midpoint of the line
-          {
-            x:
-              (position.x + x) / 2 +
-              Math.random() * curveAmount -
-              curveAmount / 2,
-            y:
-              (position.y + y) / 2 +
-              Math.random() * curveAmount -
-              curveAmount / 2,
-          },
-          { x: x, y: y },
-        ])
-      setCurve(bezier.getLUT(length * 0.2));
+      setDestination({ x, y });
     };
-    document.addEventListener("mousedown", listener);
+    document.addEventListener("mousemove", listener);
 
     return () => {
-      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("mousemove", listener);
     };
   }, [app, position.x, position.y]);
 
-  useTick((_delta) => {
-    if (curve) {
-      if (curve.length === 0) {
-        setCurve(undefined);
-        return;
-      }
-      const position = curve.shift();
-      setPosition({
-        x: position!.x,
-        y: position!.y,
-      });
+  useTick((delta) => {
+    const newVelocity = {
+      x: destination.x - position.x,
+      y: destination.y - position.y,
+    };
+    const length = Math.sqrt(
+      Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
+    );
+    if (length < 1) {
+      return;
     }
+    newVelocity.x /= length;
+    newVelocity.y /= length;
+
+    const velocity = {
+      x: lastVelocity.x * 0.95 + newVelocity.x * 0.05,
+      y: lastVelocity.y * 0.95 + newVelocity.y * 0.05,
+    };
+
+    setPosition((position) => ({
+      x: position.x + velocity.x * delta * 20,
+      y: position.y + velocity.y * delta * 20,
+    }));
+    setLastVelocity(velocity);
   });
 
   return (
