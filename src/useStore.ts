@@ -294,7 +294,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? 50
+                ? player.acceleration / 12
                 : 25) +
                 Math.random() -
                 0.5),
@@ -304,7 +304,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? 50
+                ? player.acceleration / 12
                 : 25) +
                 Math.random() -
                 0.5),
@@ -337,7 +337,8 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation) * 4;
         bird.emitter!.emitNow();
         bird.emitter!.spawnChance =
-          Math.max((length - 4000) / 4000, 0) + bird.torque;
+          Math.max((length - 10000) / 10000, 0) +
+          Math.min(bird.torque, 0.1) * 2;
       }
     });
   },
