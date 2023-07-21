@@ -1,12 +1,11 @@
 import { Sprite, useTick, useApp } from "@pixi/react";
 import { useEffect, useState } from "react";
 import "./App.css";
+import useStore from "./useStore";
 
 function App() {
-  const [position, setPosition] = useState({ x: 400, y: 270 });
-  const [destination, setDestination] = useState({ x: 400, y: 270 });
-  const [lastVelocity, setLastVelocity] = useState({ x: 0, y: 0 });
-  const [rotation, setRotation] = useState(0);
+  const player = useStore(state => state.player);
+  const setPlayer = useStore(state => state.setPlayer);
   const app = useApp();
 
   useEffect(() => {
@@ -15,16 +14,19 @@ function App() {
       const rect = root?.getBoundingClientRect();
       const x = e.clientX - (rect?.left || 0);
       const y = e.clientY - (rect?.top || 0);
-      setDestination({ x, y });
+      setPlayer(player => {
+        player.destination = { x, y };
+      })
     };
     document.addEventListener("mousemove", listener);
 
     return () => {
       document.removeEventListener("mousemove", listener);
     };
-  }, [app, position.x, position.y]);
+  }, [app, player, setPlayer]);
 
   useTick((delta) => {
+    const { position, destination, lastVelocity } = player;
     const newVelocity = {
       x: destination.x - position.x,
       y: destination.y - position.y,
@@ -42,22 +44,27 @@ function App() {
       x: lastVelocity.x * 0.95 + newVelocity.x * 0.05,
       y: lastVelocity.y * 0.95 + newVelocity.y * 0.05,
     };
-    setRotation(Math.atan2(velocity.y, velocity.x));
 
-    setPosition((position) => ({
-      x: position.x + velocity.x * delta * 20,
-      y: position.y + velocity.y * delta * 20,
-    }));
-    setLastVelocity(velocity);
+    const rotation = Math.atan2(velocity.y, velocity.x);
+
+    setPlayer((player) => {
+      player.position = {
+        x: position.x + velocity.x * delta * 20,
+        y: position.y + velocity.y * delta * 20,
+      }
+      player.velocity = velocity;
+      player.lastVelocity = velocity;
+      player.rotation = rotation;
+    });
   });
 
   return (
     <>
       <Sprite
         image="public/jay.png"
-        x={position.x}
-        y={position.y}
-        rotation={rotation + Math.PI / 2}
+        x={player.position.x}
+        y={player.position.y}
+        rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
       />
     </>

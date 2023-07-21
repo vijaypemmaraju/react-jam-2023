@@ -1,17 +1,31 @@
 import { create } from "zustand";
+import { produce } from "immer";
 
 type Store = {
-  destination: {
-    x: number;
-    y: number;
-  } | null;
-  setDestination: (x: number, y: number) => void;
-}
+  player: {
+    position: { x: number; y: number };
+    velocity: { x: number; y: number };
+    lastVelocity: { x: number; y: number };
+    destination: { x: number; y: number };
+    rotation: number;
+  };
+  setPlayer: (fn: (draft: Store["player"]) => void) => void;
+};
 
 const useStore = create<Store>((set, _get) => ({
-  destination: null,
-  setDestination: ( x, y) => set({ destination: { x, y } })
+  player: {
+    position: { x: 400, y: 270 },
+    velocity: { x: 0, y: 0 },
+    lastVelocity: { x: 0, y: 0 },
+    destination: { x: 400, y: 270 },
+    rotation: 0,
+  },
+  setPlayer: (fn) =>
+    set(
+      produce((draft) => {
+        fn(draft.player);
+      })
+    ),
 }));
-
 
 export default useStore;
