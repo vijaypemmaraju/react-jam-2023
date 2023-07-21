@@ -1,1 +1,1 @@
-export const PLAYER_SPEED = 10;
+export const PLAYER_SPEED = 0.06;

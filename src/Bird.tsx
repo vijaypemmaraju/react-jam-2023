@@ -21,6 +21,7 @@ function Birds() {
   useEffect(() => {
     setBirds((birds) => {
       for (let i = 0; i < 25; i++) {
+        const random = Math.random();
         birds.push({
           position: {
             x: Math.random() * app.screen.width,
@@ -41,6 +42,7 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100})`,
         });
       }
     });
@@ -61,11 +63,12 @@ function Birds() {
             isPlaying
             animationSpeed={Math.min(0.1, (1 - Math.pow(bird.acceleration, 2))) + Math.random() * 0.1}
             textures={frames}
+            tint={bird.tint}
             x={bird.position.x}
             y={bird.position.y}
             rotation={bird.rotation}
             anchor={{ x: 0.5, y: 0.5 }}
-            scale={{ x: 1, y: 1 - Math.min((bird.torque || 0) * 20, 0.5) }}
+            scale={{ x: 1 + Math.min((bird.acceleration || 0) * .1, 1), y: 1 - Math.min((bird.torque || 0) * 1, 0.5) }}
           />
 
         </Fragment>

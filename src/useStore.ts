@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
+import { ColorSource } from "pixi.js";
 
 type GameObject = {
   position: { x: number; y: number };
@@ -15,6 +16,7 @@ type GameObject = {
   torque: number;
   emitter?: Emitter;
   speedBoost?: number;
+  tint?: ColorSource;
 };
 
 type Store = {
@@ -97,6 +99,7 @@ const useStore = create<Store>((set, get) => ({
     }
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
+    player.emitter!.particlesPerWave = 5;
     // spawn to the left and right of the player
     player.emitter!.spawnPos.x =
       position.x -
@@ -116,20 +119,21 @@ const useStore = create<Store>((set, get) => ({
       Math.sin(rotation - Math.PI / 4) * 16 -
       Math.sin(rotation) * 4;
     player.emitter!.emitNow();
-    if (velocityMagnitude > 0.85 || player.torque > 0.05) {
-      player.emitter!.spawnChance = 0.5;
-    } else {
-      player.emitter!.spawnChance = 0;
-    }
+    player.emitter!.spawnChance =
+      Math.max((length - 250) / 250, 0) + Math.min(player.torque, 0.1) * 2;
 
     setPlayer((player) => {
       player.position = {
         x:
           position.x +
-          velocity.x * delta * (PLAYER_SPEED * (player.speedBoost || 1)),
+          velocity.x *
+            delta *
+            (PLAYER_SPEED * length * (player.speedBoost || 1)),
         y:
           position.y +
-          velocity.y * delta * (PLAYER_SPEED * (player.speedBoost || 1)),
+          velocity.y *
+            delta *
+            (PLAYER_SPEED * length * (player.speedBoost || 1)),
       };
       player.velocity = velocity;
       player.lastVelocity = velocity;
@@ -294,13 +298,8 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation - Math.PI / 4) * 16 -
           Math.sin(rotation) * 4;
         bird.emitter!.emitNow();
-        if (velocityMagnitude > 0.85 || bird.torque > 0.05) {
-          bird.emitter!.spawnChance = 0.5;
-        } else {
-          bird.emitter!.spawnChance = 0;
-        }
-
-        bird.emitter!.emitNow();
+        bird.emitter!.spawnChance =
+          Math.max((length - 4000) / 4000, 0) + bird.torque;
       }
     });
   },

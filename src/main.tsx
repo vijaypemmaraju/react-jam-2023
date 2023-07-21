@@ -47,7 +47,7 @@ export const emitterConfig: EmitterConfigV3 = {
         alpha: {
           list: [
             {
-              value: 0.15,
+              value: 0.2,
               time: 0,
             },
             {
@@ -126,8 +126,8 @@ export const MyComponent = () => {
           <input type="range" value={WEIGHTS.SEPARATION} min={0} max={100} step={1} onChange={(e) => useStore.setState({ WEIGHTS: { ...WEIGHTS, SEPARATION: parseInt(e.target.value) } })} />
         </div>
       </div> */}
-      <Stage width={1024} height={768}>
-        <Viewport width={1024} height={768}>
+      <Stage width={window.innerWidth} height={window.innerHeight}>
+        <Viewport width={window.innerWidth} height={window.innerHeight}>
           <App />
         </Viewport>
       </Stage>
