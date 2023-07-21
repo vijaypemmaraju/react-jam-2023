@@ -114,7 +114,9 @@ export const emitterConfig: EmitterConfigV3 = {
 export const MyComponent = () => {
   const WEIGHTS = useStore((state) => state.WEIGHTS);
   return (
-    <div className="w-[100vw] h-[100vh] flex items-center justify-center">
+    <div className="w-[100vw] min-h-[100vh] flex items-center justify-center" style={{
+      minHeight: '-webkit-fill-available',
+    }}>
       {/* <div>
         <div className="text-2xl font-bold">Weights</div>
         <div className="flex flex-col">
