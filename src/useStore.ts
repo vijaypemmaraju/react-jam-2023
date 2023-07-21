@@ -50,15 +50,15 @@ const useStore = create<Store>((set, get) => ({
     const length = Math.sqrt(
       Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
-    if (length < 1) {
+    if (length < 0.1) {
       return;
     }
     newVelocity.x /= length;
     newVelocity.y /= length;
 
     const velocity = {
-      x: lastVelocity.x * 0.95 + newVelocity.x * 0.05,
-      y: lastVelocity.y * 0.95 + newVelocity.y * 0.05,
+      x: lastVelocity.x * 0.97 + newVelocity.x * 0.03,
+      y: lastVelocity.y * 0.97 + newVelocity.y * 0.03,
     };
 
     const rotation = Math.atan2(velocity.y, velocity.x);
@@ -183,8 +183,8 @@ const useStore = create<Store>((set, get) => ({
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        velocity.x *= 0.25;
-        velocity.y *= 0.25;
+        velocity.x *= 0.2;
+        velocity.y *= 0.2;
 
         const rotation = Math.atan2(velocity.y, velocity.x);
 
