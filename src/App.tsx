@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
-  // const blurFilter = useMemo(() => new BlurFilter(4), []);
   const [position, setPosition] = useState({ x: 400, y: 270 });
   const [destination, setDestination] = useState({ x: 400, y: 270 });
   const [lastVelocity, setLastVelocity] = useState({ x: 0, y: 0 });
-  // const [curve, setCurve] = useState<Point[]>();
+  const [rotation, setRotation] = useState(0);
   const app = useApp();
 
   useEffect(() => {
@@ -43,6 +42,7 @@ function App() {
       x: lastVelocity.x * 0.95 + newVelocity.x * 0.05,
       y: lastVelocity.y * 0.95 + newVelocity.y * 0.05,
     };
+    setRotation(Math.atan2(velocity.y, velocity.x));
 
     setPosition((position) => ({
       x: position.x + velocity.x * delta * 20,
@@ -54,9 +54,10 @@ function App() {
   return (
     <>
       <Sprite
-        image="https://pixijs.io/pixi-react/img/bunny.png"
+        image="public/jay.png"
         x={position.x}
         y={position.y}
+        rotation={rotation + Math.PI / 2}
         anchor={{ x: 0.5, y: 0.5 }}
       />
     </>
