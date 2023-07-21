@@ -338,7 +338,7 @@ const useStore = create<Store>((set, get) => ({
         bird.emitter!.emitNow();
         bird.emitter!.spawnChance =
           Math.max((length - 10000) / 10000, 0) +
-          Math.min(bird.torque, 0.1) * 2;
+          Math.min(bird.torque * 0.5, 0.01);
       }
     });
   },

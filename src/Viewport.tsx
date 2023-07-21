@@ -27,8 +27,8 @@ const PixiComponentViewport = PixiComponent("Viewport", {
     viewport.clamp({
       top: 0,
       left: 0,
-      right: 2048,
-      bottom: 2048,
+      right: 3072,
+      bottom: 3072,
     });
     viewport.zoom(0.5, true);
     useStore.getState().setViewport(viewport);

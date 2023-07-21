@@ -32,8 +32,8 @@ function App() {
 
   useEffect(() => {
     viewport?.follow(ref.current!, {
-      acceleration: 5,
-      speed: 7,
+      acceleration: 7,
+      speed: 10,
     });
   }, [viewport]);
 
@@ -61,8 +61,9 @@ function App() {
         image="elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a.png"
         x={0}
         y={0}
-        filters={[new BlurFilter(16, 16)]}
-        scale={{ x: 2, y: 2 }}
+        filters={[new BlurFilter(8, 8)]}
+        tint={0xEEEEEE}
+        scale={{ x: 3, y: 3 }}
       />
       <Emitter config={emitterConfig} onCreate={(emitter: PixiEmitter) => setPlayer((player) => {
         player.emitter = emitter;
@@ -71,13 +72,13 @@ function App() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         isPlaying
-        animationSpeed={Math.min(0.5, (1 - Math.pow(Math.min(player.acceleration / 250, 250), 2)))}
+        animationSpeed={Math.min(0.25, (1 - Math.pow(Math.min(player.acceleration / 500, 500), 2)))}
         textures={frames}
         x={player.position.x}
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
-        scale={{ x: 1 + Math.min((player.acceleration * .02 || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
+        scale={{ x: 1 + Math.min((player.acceleration * .01 || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
       />
       <Birds />
     </>
