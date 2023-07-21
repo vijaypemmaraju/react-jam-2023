@@ -1,4 +1,5 @@
 import { Sprite, useTick, useApp } from "@pixi/react";
+import { BlurFilter } from "pixi.js";
 import { useEffect, useState } from "react";
 import "./App.css";
 import useStore from "./useStore";
@@ -13,19 +14,19 @@ function App() {
   const setBirds = useStore((state) => state.setBirds);
   const updateBirds = useStore((state) => state.updateBirds);
 
-  useEffect(() => {
-    const handler = () => {
-      app.renderer.resize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener('resize', handler);
+  // useEffect(() => {
+  //   const handler = () => {
+  //     app.renderer.resize(window.innerWidth, window.innerHeight);
+  //   };
+  //   window.addEventListener('resize', handler);
 
-    return () =>
-      window.removeEventListener('resize', handler);
-  }, [app]);
+  //   return () =>
+  //     window.removeEventListener('resize', handler);
+  // }, [app]);
 
   useEffect(() => {
     setBirds((birds) => {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 25; i++) {
         birds.push({
           position: {
             x: Math.random() * app.screen.width,
@@ -74,11 +75,19 @@ function App() {
   return (
     <>
       <Sprite
+        image="public/elevatelol_top_down_pixel_art_town_view_from_directly_above_07128aeb-caed-4289-8d96-4f9a8f86d0e4.png"
+        x={0}
+        y={0}
+        filters={[new BlurFilter(4, 4)]}
+        scale={{ x: 2, y: 2 }}
+      />
+      <Sprite
         image="public/jay.png"
         x={player.position.x}
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
+        scale={{ x: 1.5, y: 1.5 }}
       />
       {birds.map((bird, i) => (
         <Sprite
@@ -88,6 +97,7 @@ function App() {
           y={bird.position.y}
           rotation={bird.rotation}
           anchor={{ x: 0.5, y: 0.5 }}
+          scale={{ x: 1.5, y: 1.5 }}
         />
       ))}
     </>

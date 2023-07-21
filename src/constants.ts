@@ -6,6 +6,11 @@ export const WEIGHTS = {
     const rect = root!.getBoundingClientRect();
     return rect.width / 6;
   },
+  FORCE_RADIUS: () => {
+    const root = document.querySelector("canvas");
+    const rect = root!.getBoundingClientRect();
+    return rect.width / 4;
+  },
   COHESION: 1,
   ALIGNMENT: 5,
   SEPARATION: 50,

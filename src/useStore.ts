@@ -76,79 +76,84 @@ const useStore = create<Store>((set, get) => ({
   updateBirds: (delta: number) => {
     const { player, setBirds } = get();
     setBirds((birds) => {
+      let bird,
+        position,
+        lastVelocity,
+        playerAttraction,
+        attractionLength,
+        centerOfScreenAttraction,
+        newVelocity,
+        length,
+        velocity,
+        velocityLength,
+        rotation;
+      let cohesion, alignment, separation, distance;
+      let center = { x: 0, y: 0 };
+      const root = document.querySelector("canvas");
+      const rect = root!.getBoundingClientRect();
+      center.x = rect.width / 2;
+      center.y = rect.height / 2;
+
       for (let i = 0; i < birds.length; i++) {
-        const bird = birds[i];
-        const { position, lastVelocity } = bird;
-        const playerAttraction = {
+        bird = birds[i];
+        position = bird.position;
+        lastVelocity = bird.lastVelocity;
+
+        playerAttraction = {
           x: player.position.x - position.x,
           y: player.position.y - position.y,
         };
 
-        const attractionLength = Math.sqrt(
+        attractionLength = Math.sqrt(
           Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
-
         if (attractionLength > WEIGHTS.ATTRACTION_RADIUS()) {
           playerAttraction.x = 0;
           playerAttraction.y = 0;
         }
-        const root = document.querySelector("canvas");
-        const rect = root!.getBoundingClientRect();
-        const center = {
-          x: rect.width / 2 + rect.left,
-          y: rect.height / 2 + rect.top,
-        };
-        const centerOfScreenAttraction = {
+
+        centerOfScreenAttraction = {
           x: center.x - position.x,
           y: center.y - position.y,
         };
 
-        const cohesion = birds
-          .filter((b) => b !== bird)
-          .reduce(
-            (acc, bird) => {
-              acc.x += bird.position.x;
-              acc.y += bird.position.y;
-              return acc;
-            },
-            { x: 0, y: 0 }
-          );
-        cohesion.x /= birds.length;
-        cohesion.y /= birds.length;
-        cohesion.x = cohesion.x - position.x;
-        cohesion.y = cohesion.y - position.y;
+        cohesion = { x: 0, y: 0 };
+        alignment = { x: 0, y: 0 };
+        separation = { x: 0, y: 0 };
+        let count = 0;
 
-        const alignment = birds
-          .filter((b) => b !== bird)
-          .reduce(
-            (acc, bird) => {
-              acc.x += bird.velocity.x;
-              acc.y += bird.velocity.y;
-              return acc;
-            },
-            { x: 0, y: 0 }
-          );
-        alignment.x /= birds.length;
-        alignment.y /= birds.length;
+        for (let j = 0; j < birds.length; j++) {
+          if (i !== j) {
+            distance = Math.sqrt(
+              Math.pow(birds[j].position.x - position.x, 2) +
+                Math.pow(birds[j].position.y - position.y, 2)
+            );
+            if (distance < WEIGHTS.FORCE_RADIUS()) {
+              cohesion.x += birds[j].position.x;
+              cohesion.y += birds[j].position.y;
 
-        const separation = birds
-          .filter((b) => b !== bird)
-          .reduce(
-            (acc, bird) => {
-              const distance = Math.sqrt(
-                Math.pow(bird.position.x - position.x, 2) +
-                  Math.pow(bird.position.y - position.y, 2)
-              );
-              acc.x += (bird.position.x - position.x) / distance;
-              acc.y += (bird.position.y - position.y) / distance;
-              return acc;
-            },
-            { x: 0, y: 0 }
-          );
-        separation.x *= -1;
-        separation.y *= -1;
+              alignment.x += birds[j].velocity.x;
+              alignment.y += birds[j].velocity.y;
 
-        const newVelocity = {
+              separation.x += (birds[j].position.x - position.x) / distance;
+              separation.y += (birds[j].position.y - position.y) / distance;
+              count++;
+            }
+          }
+        }
+
+        if (count > 0) {
+          cohesion.x = cohesion.x / count - position.x;
+          cohesion.y = cohesion.y / count - position.y;
+
+          alignment.x /= count;
+          alignment.y /= count;
+
+          separation.x *= -1;
+          separation.y *= -1;
+        }
+
+        newVelocity = {
           x:
             playerAttraction.x * WEIGHTS.PLAYER_ATTRACTION +
             centerOfScreenAttraction.x * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
@@ -163,21 +168,22 @@ const useStore = create<Store>((set, get) => ({
             separation.y * WEIGHTS.SEPARATION,
         };
 
-        const length = Math.sqrt(
+        length = Math.sqrt(
           Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
         );
         if (length < 0.01) {
-          return;
+          continue;
         }
+
         newVelocity.x /= length;
         newVelocity.y /= length;
 
-        const velocity = {
+        velocity = {
           x: lastVelocity.x * 0.985 + newVelocity.x * 0.015,
           y: lastVelocity.y * 0.985 + newVelocity.y * 0.015,
         };
 
-        const velocityLength = Math.sqrt(
+        velocityLength = Math.sqrt(
           Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
         velocity.x /= velocityLength;
@@ -186,7 +192,7 @@ const useStore = create<Store>((set, get) => ({
         velocity.x *= 0.2;
         velocity.y *= 0.2;
 
-        const rotation = Math.atan2(velocity.y, velocity.x);
+        rotation = Math.atan2(velocity.y, velocity.x);
 
         bird.position = {
           x: position.x + velocity.x * delta * (25 + Math.random() - 0.5),

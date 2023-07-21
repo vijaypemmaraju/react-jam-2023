@@ -5,11 +5,11 @@ import "./index.css";
 
 export const MyComponent = () => {
   return (
-    <>
-      <Stage width={window.innerWidth} height={window.innerHeight}>
+    <div className="w-[100vw] h-[100vh] flex items-center justify-center">
+      <Stage width={800} height={600}>
         <App />
       </Stage>
-    </>
+    </div>
   );
 };
 
