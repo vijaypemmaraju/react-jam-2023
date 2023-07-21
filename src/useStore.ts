@@ -183,7 +183,10 @@ const useStore = create<Store>((set, get) => ({
         attractionLength = Math.sqrt(
           Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
-        if (attractionLength > WEIGHTS.ATTRACTION_RADIUS) {
+
+        const isCloseToPlayer = attractionLength < WEIGHTS.ATTRACTION_RADIUS;
+
+        if (!isCloseToPlayer) {
           playerAttraction.x = 0;
           playerAttraction.y = 0;
         }
@@ -236,7 +239,10 @@ const useStore = create<Store>((set, get) => ({
         newVelocity = {
           x:
             playerAttraction.x *
-              (player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 10 : 1) *
+              (isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+                ? 10
+                : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
             centerOfScreenAttraction.x * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.x * WEIGHTS.COHESION +
@@ -244,7 +250,10 @@ const useStore = create<Store>((set, get) => ({
             separation.x * WEIGHTS.SEPARATION,
           y:
             playerAttraction.y *
-              (player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 100 : 1) *
+              (isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+                ? 100
+                : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
             centerOfScreenAttraction.y * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.y * WEIGHTS.COHESION +
@@ -283,14 +292,20 @@ const useStore = create<Store>((set, get) => ({
             position.x +
             velocity.x *
               delta *
-              ((player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 50 : 25) +
+              ((isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+                ? 50
+                : 25) +
                 Math.random() -
                 0.5),
           y:
             position.y +
             velocity.y *
               delta *
-              ((player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD ? 50 : 25) +
+              ((isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+                ? 50
+                : 25) +
                 Math.random() -
                 0.5),
         };
