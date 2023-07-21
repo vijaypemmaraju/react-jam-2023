@@ -7,6 +7,7 @@ import { Emitter } from "@pixi/particle-emitter";
 type GameObject = {
   position: { x: number; y: number };
   velocity: { x: number; y: number };
+  acceleration: number;
   lastVelocity: { x: number; y: number };
   destination: { x: number; y: number };
   rotation: number;
@@ -50,6 +51,7 @@ const useStore = create<Store>((set, get) => ({
     position: { x: 400, y: 270 },
     velocity: { x: 0, y: 0 },
     lastVelocity: { x: 0, y: 0 },
+    acceleration: 0,
     destination: { x: 400, y: 270 },
     speedBoost: 1,
     rotation: 0,
@@ -78,9 +80,6 @@ const useStore = create<Store>((set, get) => ({
     const length = Math.sqrt(
       Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
-    if (length < 0.1) {
-      return;
-    }
     newVelocity.x /= length;
     newVelocity.y /= length;
 
@@ -92,6 +91,10 @@ const useStore = create<Store>((set, get) => ({
       Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
     );
 
+    if (velocityMagnitude < 0.02) {
+      velocity.x = 0;
+      velocity.y = 0;
+    }
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
     // spawn to the left and right of the player
@@ -133,6 +136,7 @@ const useStore = create<Store>((set, get) => ({
       player.rotation = rotation;
       player.torque = Math.abs(player.rotation - (player.lastRotation || 0));
       player.lastRotation = rotation;
+      player.acceleration = velocityMagnitude;
     });
   },
   updateBirds: (delta: number) => {

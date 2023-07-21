@@ -1,10 +1,15 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
-import { Sprite, useTick, useApp } from "@pixi/react";
+import { Sprite, useTick, useApp, AnimatedSprite } from "@pixi/react";
+import { Assets, Texture } from "pixi.js";
 import { Fragment, useEffect } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
 import { emitterConfig } from "./main";
 import useStore from "./useStore";
+
+const sheet = await Assets.load('public/female_jay_sheet.json');
+const frames = Object.keys(sheet.data.frames).map(frame => Texture.from(frame));
+
 
 function Birds() {
   const app = useApp();
@@ -34,6 +39,8 @@ function Birds() {
             y: 0,
           },
           rotation: 0,
+          acceleration: 0,
+          torque: 0,
         });
       }
     });
@@ -50,8 +57,10 @@ function Birds() {
           <Emitter config={emitterConfig} onCreate={(emitter: PixiEmitter) => setBirds((birds) => {
             birds[i].emitter = emitter;
           })} />
-          <Sprite
-            image="public/female_jay.png"
+          <AnimatedSprite
+            isPlaying
+            animationSpeed={Math.min(0.1, (1 - Math.pow(bird.acceleration, 2))) + Math.random() * 0.1}
+            textures={frames}
             x={bird.position.x}
             y={bird.position.y}
             rotation={bird.rotation}

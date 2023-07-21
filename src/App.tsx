@@ -1,12 +1,17 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
-import { Sprite, useTick, useApp } from "@pixi/react";
-import { BlurFilter, Point, Sprite as PixiSprite } from "pixi.js";
+import { AnimatedSprite, Sprite, useTick, useApp } from "@pixi/react";
+import { BlurFilter, Point, Sprite as PixiSprite, Texture } from "pixi.js";
 import { useEffect, useRef } from "react";
 import "./App.css";
 import Birds from "./Bird";
 import Emitter from "./Emitter";
 import { emitterConfig } from "./main";
 import useStore from "./useStore";
+
+import { Assets } from 'pixi.js';
+
+const sheet = await Assets.load('public/jay_sheet.json');
+const frames = Object.keys(sheet.data.frames).map(frame => Texture.from(frame));
 
 function App() {
   const player = useStore((state) => state.player);
@@ -17,13 +22,17 @@ function App() {
   const viewport = useStore((state) => state.viewport);
 
   useEffect(() => {
+    console.log(app.loader);
+  }, []);
+
+  useEffect(() => {
     viewport?.follow(ref.current!, {
       acceleration: 5,
       speed: 7,
     });
   }, [viewport]);
 
-  const ref = useRef<PixiSprite | undefined>();
+  const ref = useRef<PixiSprite | null>(null);
 
   useTick((delta) => {
     const root = document.querySelector("canvas");
@@ -51,14 +60,16 @@ function App() {
       <Emitter config={emitterConfig} onCreate={(emitter: PixiEmitter) => setPlayer((player) => {
         player.emitter = emitter;
       })} />
-      <Sprite
+      <AnimatedSprite
         ref={ref}
-        image="public/jay.png"
+        isPlaying
+        animationSpeed={Math.min(0.5, (1 - Math.pow(player.acceleration, 2)))}
+        textures={frames}
         x={player.position.x}
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
-        scale={{ x: 1, y: 1 - Math.min((player.torque || 0) * 20, 0.5) }}
+        scale={{ x: 1 + Math.min((player.acceleration || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 1, 0.5) }}
       />
       <Birds />
     </>

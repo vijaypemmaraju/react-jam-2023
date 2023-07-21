@@ -17,7 +17,7 @@ export const emitterConfig: EmitterConfigV3 = {
   // spawnChance: 1,
   particlesPerWave: 1,
   // emitterLifetime: 3,
-  maxParticles: 500,
+  maxParticles: 250,
   pos: {
     x: 0,
     y: 0,
@@ -47,7 +47,7 @@ export const emitterConfig: EmitterConfigV3 = {
         alpha: {
           list: [
             {
-              value: 0.1,
+              value: 0.15,
               time: 0,
             },
             {
