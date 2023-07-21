@@ -11,7 +11,7 @@ type GameObject = {
   destination: { x: number; y: number };
   rotation: number;
   lastRotation?: number;
-  torque?: number;
+  torque: number;
   emitter?: Emitter;
   speedBoost?: number;
 };
@@ -53,6 +53,7 @@ const useStore = create<Store>((set, get) => ({
     destination: { x: 400, y: 270 },
     speedBoost: 1,
     rotation: 0,
+    torque: 0,
   },
   setPlayer: (fn) =>
     set(
@@ -93,19 +94,29 @@ const useStore = create<Store>((set, get) => ({
 
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
-    if (velocityMagnitude > 0.85) {
-      // spawn to the left and right of the player
-      player.emitter!.spawnPos.x =
-        position.x - Math.cos(rotation + Math.PI / 2) * 8;
-      player.emitter!.spawnPos.y =
-        position.y - Math.sin(rotation - Math.PI / 2) * 8;
-      player.emitter!.emitNow();
-
-      player.emitter!.spawnPos.x =
-        position.x - Math.cos(rotation - Math.PI / 2) * 8;
-      player.emitter!.spawnPos.y =
-        position.y - Math.sin(rotation - Math.PI / 2) * 8;
-      player.emitter!.emitNow();
+    // spawn to the left and right of the player
+    player.emitter!.spawnPos.x =
+      position.x -
+      Math.cos(rotation + Math.PI / 4) * 16 -
+      Math.cos(rotation) * 4;
+    player.emitter!.spawnPos.y =
+      position.y -
+      Math.sin(rotation + Math.PI / 4) * 16 -
+      Math.sin(rotation) * 4;
+    player.emitter!.emitNow();
+    player.emitter!.spawnPos.x =
+      position.x -
+      Math.cos(rotation - Math.PI / 4) * 16 -
+      Math.cos(rotation) * 4;
+    player.emitter!.spawnPos.y =
+      position.y -
+      Math.sin(rotation - Math.PI / 4) * 16 -
+      Math.sin(rotation) * 4;
+    player.emitter!.emitNow();
+    if (velocityMagnitude > 0.85 || player.torque > 0.05) {
+      player.emitter!.spawnChance = 0.5;
+    } else {
+      player.emitter!.spawnChance = 0;
     }
 
     setPlayer((player) => {
@@ -259,13 +270,33 @@ const useStore = create<Store>((set, get) => ({
           Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
 
-        if (velocityMagnitude > 0.2) {
-          bird.emitter!.spawnPos.x = position.x - newVelocity.x * 50;
-          bird.emitter!.spawnPos.y = position.y - newVelocity.y * 50;
-          bird.emitter?.rotate(rotation + Math.PI);
-          bird.emitter!.spawnChance = 0.01;
-          bird.emitter!.emitNow();
+        bird.emitter?.rotate(rotation + Math.PI);
+        // spawn to the left and right of the player
+        bird.emitter!.spawnPos.x =
+          position.x -
+          Math.cos(rotation + Math.PI / 4) * 16 -
+          Math.cos(rotation) * 4;
+        bird.emitter!.spawnPos.y =
+          position.y -
+          Math.sin(rotation + Math.PI / 4) * 16 -
+          Math.sin(rotation) * 4;
+        bird.emitter!.emitNow();
+        bird.emitter!.spawnPos.x =
+          position.x -
+          Math.cos(rotation - Math.PI / 4) * 16 -
+          Math.cos(rotation) * 4;
+        bird.emitter!.spawnPos.y =
+          position.y -
+          Math.sin(rotation - Math.PI / 4) * 16 -
+          Math.sin(rotation) * 4;
+        bird.emitter!.emitNow();
+        if (velocityMagnitude > 0.85 || bird.torque > 0.05) {
+          bird.emitter!.spawnChance = 0.5;
+        } else {
+          bird.emitter!.spawnChance = 0;
         }
+
+        bird.emitter!.emitNow();
       }
     });
   },

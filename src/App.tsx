@@ -45,7 +45,7 @@ function App() {
         image="public/elevatelol_top_down_pixel_art_town_view_from_directly_above_07128aeb-caed-4289-8d96-4f9a8f86d0e4.png"
         x={0}
         y={0}
-        filters={[new BlurFilter(4, 4)]}
+        filters={[new BlurFilter(16, 16)]}
         scale={{ x: 2, y: 2 }}
       />
       <Emitter config={emitterConfig} onCreate={(emitter: PixiEmitter) => setPlayer((player) => {

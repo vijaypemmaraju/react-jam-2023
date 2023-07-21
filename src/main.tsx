@@ -11,7 +11,7 @@ import { Texture } from "pixi.js";
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
     min: 0.1,
-    max: 0.3,
+    max: 1,
   },
   frequency: .1,
   // spawnChance: 1,
@@ -35,6 +35,23 @@ export const emitterConfig: EmitterConfigV3 = {
             },
             {
               value: 0.09,
+              time: 1,
+            },
+          ],
+        },
+      },
+    },
+    {
+      type: 'alpha',
+      config: {
+        alpha: {
+          list: [
+            {
+              value: 0.1,
+              time: 0,
+            },
+            {
+              value: 0,
               time: 1,
             },
           ],
