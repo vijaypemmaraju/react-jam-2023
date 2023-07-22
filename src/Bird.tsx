@@ -1,5 +1,5 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
-import { Sprite, useTick, useApp, AnimatedSprite } from "@pixi/react";
+import { useTick, useApp, AnimatedSprite } from "@pixi/react";
 import { Assets, Texture } from "pixi.js";
 import { Fragment, useEffect, useState } from "react";
 import "./App.css";
