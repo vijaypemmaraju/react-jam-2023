@@ -32,10 +32,15 @@ function App() {
 
   useEffect(() => {
     viewport?.follow(ref.current!, {
-      acceleration: player.acceleration,
-      speed: 10,
     });
   }, [player.acceleration, viewport]);
+
+  useEffect(() => {
+    window.addEventListener('resize', () => {
+      app.renderer.resize(window.innerWidth, window.innerHeight);
+      viewport?.resize(window.innerWidth, window.innerHeight);
+    })
+  }, [app, viewport]);
 
   const ref = useRef<PixiSprite | null>(null);
 
@@ -78,7 +83,7 @@ function App() {
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
-        scale={{ x: 1 + Math.min((player.acceleration * .01 || 0) * .1, 1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
+        scale={{ x: 1 + Math.min(player.acceleration * .1, .1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
       />
       <Birds />
     </>

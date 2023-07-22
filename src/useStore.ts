@@ -49,7 +49,7 @@ const useStore = create<Store>((set, get) => ({
     COHESION: 5,
     ALIGNMENT: 5,
     SEPARATION: 100,
-    HIGH_SPEED_THRESHOLD: 250,
+    HIGH_SPEED_THRESHOLD: 500,
   },
   player: {
     position: { x: 400, y: 270 },
@@ -101,7 +101,7 @@ const useStore = create<Store>((set, get) => ({
     }
     const rotation = Math.atan2(velocity.y, velocity.x);
     player.emitter?.rotate(rotation + Math.PI);
-    player.emitter!.particlesPerWave = 10;
+    player.emitter!.particlesPerWave = 1;
 
     player.emitter!.spawnPos.x =
       position.x -
@@ -134,12 +134,12 @@ const useStore = create<Store>((set, get) => ({
           position.x +
           velocity.x *
             delta *
-            (PLAYER_SPEED * length * (player.speedBoost || 1)),
+            Math.min(30, PLAYER_SPEED * length * (player.speedBoost || 1)),
         y:
           position.y +
           velocity.y *
             delta *
-            (PLAYER_SPEED * length * (player.speedBoost || 1)),
+            Math.min(30, PLAYER_SPEED * length * (player.speedBoost || 1)),
       };
       player.velocity = velocity;
       player.lastVelocity = velocity;

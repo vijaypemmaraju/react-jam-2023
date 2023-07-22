@@ -10,7 +10,7 @@ import { Assets, Texture } from "pixi.js";
 
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
-    min: 0.1,
+    min: 0.5,
     max: 1,
   },
   frequency: .1,
@@ -47,7 +47,7 @@ export const emitterConfig: EmitterConfigV3 = {
         alpha: {
           list: [
             {
-              value: 0.2,
+              value: 0.3,
               time: 0,
             },
             {
