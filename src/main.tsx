@@ -90,7 +90,7 @@ export const Root = () => {
                 top: mode === "main" ? 0 : -100,
               }}
             >
-              Jay Bay
+              Jay Bae
             </motion.div>
             <motion.button
               className="mt-8 btn btn-primary"
