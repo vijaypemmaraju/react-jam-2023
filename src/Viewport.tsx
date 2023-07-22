@@ -30,7 +30,6 @@ const PixiComponentViewport = PixiComponent("Viewport", {
       right: 3072,
       bottom: 3072,
     });
-    viewport.zoom(0.5, true);
     useStore.getState().setViewport(viewport);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
