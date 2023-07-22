@@ -30,7 +30,9 @@ function Player() {
   }, []);
 
   useEffect(() => {
-    viewport?.follow(ref.current!, {});
+    if (ref.current) {
+      viewport?.follow(ref.current!, {});
+    }
   }, [player.acceleration, viewport]);
 
   const ref = useRef<PixiSprite | null>(null);

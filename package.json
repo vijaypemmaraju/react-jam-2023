@@ -16,6 +16,7 @@
     "@pixi/sound": "^5.2.0",
     "bezier-easing": "^2.1.0",
     "bezier-js": "^6.1.4",
+    "framer-motion": "^10.13.0",
     "immer": "^10.0.2",
     "pixi-viewport": "4.17.1",
     "pixi.js": "^7.2.4",

@@ -1,11 +1,12 @@
-import { Sprite, useApp } from "@pixi/react";
-import { BlurFilter } from "pixi.js";
-import { useEffect } from "react";
+import { Sprite, Text, useApp, useTick } from "@pixi/react";
+import { BlurFilter, TextStyle } from "pixi.js";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Birds from "./Bird";
 import useStore from "./useStore";
 
 import Player from "./Player";
+import { filters, sound } from "@pixi/sound";
 
 function App() {
   const app = useApp();
@@ -19,18 +20,45 @@ function App() {
     });
   }, [app, viewport]);
 
+  const mode = useStore((state) => state.mode);
+
+  useEffect(() => {
+    if (mode === "play") {
+      setHasStarted(true);
+      sound.play("fan_loop", {
+        loop: true,
+        filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
+      });
+    } else {
+      sound.stop("fan_loop");
+    }
+  }, [mode]);
+
+  useTick((_delta, ticker) => {
+    if (mode === "play") {
+      ticker.speed = 1;
+    } else {
+      ticker.speed = 0;
+    }
+  });
+
+  const [hasStarted, setHasStarted] = useState(false);
+
   return (
     <>
       <Sprite
         image="elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png"
-        x={0}
-        y={0}
-        filters={[new BlurFilter(32, 32)]}
+        filters={[new BlurFilter(32, 32, 1, 5)]}
         tint={0xeeeeee}
         scale={{ x: 1.5, y: 1.5 }}
+        anchor={0}
       />
-      <Player />
-      <Birds />
+      {hasStarted && (
+        <>
+          <Player />
+          <Birds />
+        </>
+      )}
     </>
   );
 }
