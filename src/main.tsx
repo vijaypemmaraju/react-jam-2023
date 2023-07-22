@@ -7,6 +7,7 @@ import Viewport from "./Viewport";
 import Emitter from "./Emitter";
 import { EmitterConfigV3 } from "@pixi/particle-emitter";
 import { Assets, Texture } from "pixi.js";
+import './sounds';
 
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
@@ -47,7 +48,7 @@ export const emitterConfig: EmitterConfigV3 = {
         alpha: {
           list: [
             {
-              value: 0.3,
+              value: 0.2,
               time: 0,
             },
             {

@@ -4,6 +4,7 @@ import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
 import { ColorSource } from "pixi.js";
+import { sound } from "@pixi/sound";
 
 type GameObject = {
   position: { x: number; y: number };
@@ -17,6 +18,7 @@ type GameObject = {
   emitter?: Emitter;
   speedBoost?: number;
   tint?: ColorSource;
+  playingSound?: boolean;
 };
 
 type Store = {
@@ -76,6 +78,7 @@ const useStore = create<Store>((set, get) => ({
     ),
   updatePlayer: (delta: number) => {
     const { player, setPlayer, WEIGHTS } = get();
+
     const { position, destination, lastVelocity } = player;
     const newVelocity = {
       x: destination.x - position.x,
@@ -84,6 +87,9 @@ const useStore = create<Store>((set, get) => ({
     const length = Math.sqrt(
       Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
+    const fanLoop = sound.find("fan_loop");
+    fanLoop.volume = 0.1 + (length / 1000) * 0.4;
+    fanLoop.speed = length / 1000;
     newVelocity.x /= length;
     newVelocity.y /= length;
 
@@ -128,6 +134,20 @@ const useStore = create<Store>((set, get) => ({
       ) +
       Math.min(player.torque, 0.0) * 2;
 
+    if (player.torque > 0.08 && !player.playingSound) {
+      sound.play("woosh", {
+        volume: 0.03,
+        speed: 1 + Math.random() * 0.2 - 0.1,
+        complete: () => {
+          setPlayer((player) => {
+            player.playingSound = false;
+          });
+        },
+      });
+      setPlayer((player) => {
+        player.playingSound = true;
+      });
+    }
     setPlayer((player) => {
       player.position = {
         x:
@@ -272,8 +292,8 @@ const useStore = create<Store>((set, get) => ({
         newVelocity.y /= length;
 
         velocity = {
-          x: lastVelocity.x * 0.985 + newVelocity.x * 0.015,
-          y: lastVelocity.y * 0.985 + newVelocity.y * 0.015,
+          x: lastVelocity.x * 0.989 + newVelocity.x * 0.011,
+          y: lastVelocity.y * 0.989 + newVelocity.y * 0.011,
         };
 
         velocityLength = Math.sqrt(
@@ -294,7 +314,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? player.acceleration / 12
+                ? player.acceleration / 19
                 : 25) +
                 Math.random() -
                 0.5),
@@ -304,7 +324,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? player.acceleration / 12
+                ? player.acceleration / 19
                 : 25) +
                 Math.random() -
                 0.5),
@@ -317,7 +337,7 @@ const useStore = create<Store>((set, get) => ({
         bird.acceleration = length;
 
         bird.emitter?.rotate(rotation + Math.PI);
-
+        bird.emitter!.particlesPerWave = 1;
         bird.emitter!.spawnPos.x =
           position.x -
           Math.cos(rotation + Math.PI / 4) * 16 -
@@ -337,8 +357,8 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation) * 4;
         bird.emitter!.emitNow();
         bird.emitter!.spawnChance =
-          Math.max((length - 10000) / 10000, 0) +
-          Math.min(bird.torque * 0.5, 0.01);
+          Math.max((length - 100000) / 100000, 0) +
+          Math.min(bird.torque * 0.1, 0.01);
       }
     });
   },

@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "deploy": "gh-pages -d dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@pixi/particle-emitter": "^5.0.8",
     "@pixi/react": "^7.1.0",
+    "@pixi/sound": "^5.2.0",
     "bezier-easing": "^2.1.0",
     "bezier-js": "^6.1.4",
     "immer": "^10.0.2",
