@@ -165,6 +165,9 @@ const useStore = create<Store>((set, get) => ({
       player.lastVelocity = velocity;
       player.rotation = rotation;
       player.torque = Math.abs(player.rotation - (player.lastRotation || 0));
+      while (player.torque > Math.PI) {
+        player.torque -= Math.PI * 2;
+      }
       player.lastRotation = rotation;
       player.acceleration = length;
     });
@@ -333,8 +336,28 @@ const useStore = create<Store>((set, get) => ({
         bird.lastVelocity = velocity;
         bird.rotation = rotation;
         bird.torque = Math.abs(bird.rotation - (bird.lastRotation || 0));
+        while (bird.torque > Math.PI) {
+          bird.torque -= Math.PI * 2;
+        }
         bird.lastRotation = rotation;
         bird.acceleration = length;
+
+        if (bird.torque > 0.055 && !bird.playingSound) {
+          sound.play("wing_flap", {
+            volume: Math.max(
+              0,
+              (0.03 + Math.random() * 0.01) *
+                (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+            ),
+            speed: 1.1 + Math.random() * 0.2 - 0.1,
+            complete: () => {
+              setBirds((birds) => {
+                birds[i].playingSound = false;
+              });
+            },
+          });
+          bird.playingSound = true;
+        }
 
         bird.emitter?.rotate(rotation + Math.PI);
         bird.emitter!.particlesPerWave = 1;
