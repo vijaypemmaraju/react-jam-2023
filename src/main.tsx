@@ -8,6 +8,7 @@ import Emitter from "./Emitter";
 import { EmitterConfigV3 } from "@pixi/particle-emitter";
 import { Assets, Texture } from "pixi.js";
 import './sounds';
+import Minimap from "./Minimap";
 
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
@@ -133,8 +134,9 @@ export const MyComponent = () => {
         <Viewport width={window.innerWidth} height={window.innerHeight}>
           <App />
         </Viewport>
-      </Stage>
-    </div>
+        {/* minimap at top right */}
+        <Minimap x={window.innerWidth * .85} y={window.innerWidth * .01} width={window.innerWidth * .14} height={window.innerWidth * .1} color={0x131313} alpha={.2} />
+      </Stage>    </div>
   );
 };
 
