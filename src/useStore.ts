@@ -342,20 +342,23 @@ const useStore = create<Store>((set, get) => ({
         bird.lastRotation = rotation;
         bird.acceleration = length;
 
-        if (bird.torque > 0.055 && !bird.playingSound) {
-          sound.play("wing_flap", {
-            volume: Math.max(
-              0,
-              (0.03 + Math.random() * 0.01) *
-                (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
-            ),
-            speed: 1.1 + Math.random() * 0.2 - 0.1,
-            complete: () => {
-              setBirds((birds) => {
-                birds[i].playingSound = false;
-              });
-            },
-          });
+        if (!bird.playingSound) {
+          sound.play(
+            ["wing_flap", "wing_flap_2"][Math.floor(Math.random() * 2)],
+            {
+              volume: Math.max(
+                0,
+                (0.03 + Math.random() * 0.01) *
+                  (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+              ),
+              speed: 1.1 + Math.random() * 0.2 - 0.1,
+              complete: () => {
+                setBirds((birds) => {
+                  birds[i].playingSound = false;
+                });
+              },
+            }
+          );
           bird.playingSound = true;
         }
 
