@@ -4,7 +4,7 @@ import { Point, Sprite as PixiSprite, Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
-import { emitterConfig } from "./main";
+import { emitterConfig } from "./emitterConfig";
 import useStore from "./useStore";
 
 import { Assets } from 'pixi.js';

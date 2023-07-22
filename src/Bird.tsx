@@ -4,7 +4,7 @@ import { Assets, Texture } from "pixi.js";
 import { Fragment, useEffect, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
-import { emitterConfig } from "./main";
+import { emitterConfig } from "./emitterConfig";
 import useStore from "./useStore";
 
 function Birds() {
