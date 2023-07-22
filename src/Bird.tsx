@@ -20,7 +20,7 @@ function Birds() {
     (async () => {
       const sheet = Assets.get("female_jay_sheet.json");
       const frames = Object.keys(sheet.data.frames).map((frame) =>
-        Texture.from(frame)
+        Texture.from(frame),
       );
       setFrames(frames);
     })();
@@ -50,8 +50,9 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
         });
       }
     });
@@ -77,14 +78,20 @@ function Birds() {
           />
           <AnimatedSprite
             isPlaying
-            animationSpeed={Math.min(0.5, (1 - Math.pow(Math.min(bird.acceleration / 250, 250), 2)))}
+            animationSpeed={Math.min(
+              0.5,
+              1 - Math.pow(Math.min(bird.acceleration / 250, 250), 2),
+            )}
             textures={frames}
             tint={bird.tint}
             x={bird.position.x}
             y={bird.position.y}
             rotation={bird.rotation}
             anchor={{ x: 0.5, y: 0.5 }}
-            scale={{ x: 1 + Math.min((bird.acceleration * .001 || 0) * .1, .1), y: 1 - Math.min((bird.torque || 0) * 2, 0.5) }}
+            scale={{
+              x: 1 + Math.min((bird.acceleration * 0.001 || 0) * 0.1, 0.1),
+              y: 1 - Math.min((bird.torque || 0) * 2, 0.5),
+            }}
           />
         </Fragment>
       ))}

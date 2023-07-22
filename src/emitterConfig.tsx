@@ -1,12 +1,11 @@
 import { EmitterConfigV3 } from "@pixi/particle-emitter";
 
-
 export const emitterConfig: EmitterConfigV3 = {
   lifetime: {
     min: 0.5,
     max: 1,
   },
-  frequency: .1,
+  frequency: 0.1,
   // spawnChance: 1,
   particlesPerWave: 1,
   // emitterLifetime: 3,
@@ -35,7 +34,7 @@ export const emitterConfig: EmitterConfigV3 = {
       },
     },
     {
-      type: 'alpha',
+      type: "alpha",
       config: {
         alpha: {
           list: [

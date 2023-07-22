@@ -4,20 +4,31 @@ import App from "./App";
 import "./index.css";
 import Viewport from "./Viewport";
 import { Assets } from "pixi.js";
-import './sounds';
+import "./sounds";
 import Minimap from "./Minimap";
 
-export const MyComponent = () => {
+export const Root = () => {
   return (
-    <div className="w-[100vw] min-h-[100vh] flex items-center justify-center" style={{
-      minHeight: '-webkit-fill-available',
-    }}>
+    <div
+      className="w-[100vw] min-h-[100vh] flex items-center justify-center"
+      style={{
+        minHeight: "-webkit-fill-available",
+      }}
+    >
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Viewport width={window.innerWidth} height={window.innerHeight}>
           <App />
         </Viewport>
-        <Minimap x={window.innerWidth * .85} y={window.innerWidth * .01} width={window.innerWidth * .14} height={window.innerWidth * .1} color={0x131313} alpha={.2} />
-      </Stage>    </div>
+        <Minimap
+          x={window.innerWidth * 0.85}
+          y={window.innerWidth * 0.01}
+          width={window.innerWidth * 0.14}
+          height={window.innerWidth * 0.1}
+          color={0x131313}
+          alpha={0.2}
+        />
+      </Stage>{" "}
+    </div>
   );
 };
 
@@ -29,4 +40,4 @@ const root = createRoot(container); // createRoot(container!) if you use TypeScr
 Promise.all([
   Assets.load("jay_sheet.json"),
   Assets.load("female_jay_sheet.json"),
-]).then(() => root.render(<MyComponent />));
+]).then(() => root.render(<Root />));

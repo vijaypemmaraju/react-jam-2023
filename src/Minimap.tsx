@@ -1,7 +1,7 @@
-import React, { FC, useCallback } from 'react';
-import { Graphics } from '@pixi/react';
-import { Graphics as PixiGraphics } from 'pixi.js';
-import useStore from './useStore';
+import React, { FC, useCallback } from "react";
+import { Graphics } from "@pixi/react";
+import { Graphics as PixiGraphics } from "pixi.js";
+import useStore from "./useStore";
 
 export interface RectangleProps {
   x: number;
@@ -30,31 +30,33 @@ const Minimap: FC<RectangleProps> = (props) => {
   const drawEntities = useCallback(
     (g: PixiGraphics) => {
       g.clear();
-      g.alpha = .8;
+      g.alpha = 0.8;
       for (let i = 0; i < birds.length; i++) {
         const bird = birds[i];
         // map bird position to minimap position
-        const x = bird.position.x / viewport!.width * props.width + props.x;
-        const y = bird.position.y / viewport!.height * props.height + props.y;
-        g.beginFill('0xFFFFFF');
+        const x = (bird.position.x / viewport!.width) * props.width + props.x;
+        const y = (bird.position.y / viewport!.height) * props.height + props.y;
+        g.beginFill("0xFFFFFF");
         g.drawRect(x, y, 1, 1);
         g.endFill();
       }
 
       // map player position to minimap position
-      const x = player.position.x / viewport!.width * props.width + props.x;
-      const y = player.position.y / viewport!.height * props.height + props.y;
-      g.beginFill('0x0000FA');
+      const x = (player.position.x / viewport!.width) * props.width + props.x;
+      const y = (player.position.y / viewport!.height) * props.height + props.y;
+      g.beginFill("0x0000FA");
       g.drawRect(x, y, 4, 4);
       g.endFill();
     },
     [props, birds, player, viewport],
   );
 
-  return <>
-    <Graphics draw={drawBackground} />
-    <Graphics draw={drawEntities} />
-  </>;
-}
+  return (
+    <>
+      <Graphics draw={drawBackground} />
+      <Graphics draw={drawEntities} />
+    </>
+  );
+};
 
 export default Minimap;

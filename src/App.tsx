@@ -13,10 +13,10 @@ function App() {
   const viewport = useStore((state) => state.viewport);
 
   useEffect(() => {
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       app.renderer.resize(window.innerWidth, window.innerHeight);
       viewport?.resize(window.innerWidth, window.innerHeight);
-    })
+    });
   }, [app, viewport]);
 
   return (
@@ -26,7 +26,7 @@ function App() {
         x={0}
         y={0}
         filters={[new BlurFilter(32, 32)]}
-        tint={0xEEEEEE}
+        tint={0xeeeeee}
         scale={{ x: 1.5, y: 1.5 }}
       />
       <Player />

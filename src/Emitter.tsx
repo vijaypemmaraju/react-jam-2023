@@ -13,10 +13,7 @@ const Emitter = PixiComponent("Emitter", {
     let emitter = (this as any)._emitter;
 
     if (!emitter) {
-      emitter = new PixiEmitter(
-        instance,
-        config
-      );
+      emitter = new PixiEmitter(instance, config);
 
       let elapsed = Date.now();
 
@@ -41,7 +38,7 @@ const Emitter = PixiComponent("Emitter", {
       emitter.emit = false;
       cancelAnimationFrame(emitter.raf);
     }
-  }
+  },
 });
 
 export default Emitter;

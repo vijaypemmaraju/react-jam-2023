@@ -7,7 +7,7 @@ import Emitter from "./Emitter";
 import { emitterConfig } from "./emitterConfig";
 import useStore from "./useStore";
 
-import { Assets } from 'pixi.js';
+import { Assets } from "pixi.js";
 
 function Player() {
   const player = useStore((state) => state.player);
@@ -23,15 +23,14 @@ function Player() {
     (async () => {
       const sheet = Assets.get("jay_sheet.json");
       const frames = Object.keys(sheet.data.frames).map((frame) =>
-        Texture.from(frame)
+        Texture.from(frame),
       );
       setFrames(frames);
     })();
   }, []);
 
   useEffect(() => {
-    viewport?.follow(ref.current!, {
-    });
+    viewport?.follow(ref.current!, {});
   }, [player.acceleration, viewport]);
 
   const ref = useRef<PixiSprite | null>(null);
@@ -54,20 +53,31 @@ function Player() {
 
   return (
     <>
-      <Emitter config={emitterConfig} onCreate={(emitter: PixiEmitter) => setPlayer((player) => {
-        player.emitter = emitter;
-      })} />
+      <Emitter
+        config={emitterConfig}
+        onCreate={(emitter: PixiEmitter) =>
+          setPlayer((player) => {
+            player.emitter = emitter;
+          })
+        }
+      />
       <AnimatedSprite
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         isPlaying
-        animationSpeed={Math.min(0.25, (1 - Math.pow(Math.min(player.acceleration / 500, 500), 2)))}
+        animationSpeed={Math.min(
+          0.25,
+          1 - Math.pow(Math.min(player.acceleration / 500, 500), 2),
+        )}
         textures={frames}
         x={player.position.x}
         y={player.position.y}
         rotation={player.rotation}
         anchor={{ x: 0.5, y: 0.5 }}
-        scale={{ x: 1 + Math.min(player.acceleration * .1, .1), y: 1 - Math.min((player.torque || 0) * 2, 0.5) }}
+        scale={{
+          x: 1 + Math.min(player.acceleration * 0.1, 0.1),
+          y: 1 - Math.min((player.torque || 0) * 2, 0.5),
+        }}
       />
     </>
   );
