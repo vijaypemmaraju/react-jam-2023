@@ -26,6 +26,10 @@ function App() {
   useEffect(() => {
     if (mode === "play") {
       setHasStarted(true);
+      sound.play('ambient', {
+        loop: true,
+        volume: 0.1,
+      })
     }
   }, [mode]);
 
