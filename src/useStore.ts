@@ -4,7 +4,8 @@ import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
 import { ColorSource } from "pixi.js";
-import { IMediaInstance, Sound, sound } from "@pixi/sound";
+import { filters, IMediaInstance, Sound, sound } from "@pixi/sound";
+import { fanLoopFilters } from "./sounds";
 
 type GameObject = {
   id?: number;
@@ -357,6 +358,7 @@ const useStore = create<Store>((set, get) => ({
         if (fanLoop) {
           fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
           fanLoop.speed = length / 2000;
+          fanLoop.filters = fanLoopFilters;
         }
 
         if (bird.timeUntilNextFlapSound <= 0) {
