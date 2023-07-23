@@ -1,5 +1,6 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { useTick, useApp, AnimatedSprite } from "@pixi/react";
+import { filters, sound } from "@pixi/sound";
 import { Assets, Texture } from "pixi.js";
 import { Fragment, useEffect, useState } from "react";
 import "./App.css";
@@ -30,7 +31,17 @@ function Birds() {
     setBirds((birds) => {
       for (let i = 0; i < 25; i++) {
         const random = Math.random();
+        sound.add(`fan_loop_${i}`, "sounds/fan_loop.ogg");
+        sound.play(`fan_loop_${i}`, {
+          loop: true,
+          filters: [
+            new filters.TelephoneFilter(),
+            new filters.ReverbFilter(),
+          ],
+          volume: 0.1,
+        });
         birds.push({
+          id: i,
           position: {
             x: Math.random() * app.screen.width,
             y: Math.random() * app.screen.height,
@@ -50,9 +61,8 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
-            255 - random * 100
-          })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+            })`,
         });
       }
     });

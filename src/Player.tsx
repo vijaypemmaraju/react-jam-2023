@@ -8,6 +8,7 @@ import { emitterConfig } from "./emitterConfig";
 import useStore from "./useStore";
 
 import { Assets } from "pixi.js";
+import { filters, sound } from "@pixi/sound";
 
 function Player() {
   const player = useStore((state) => state.player);
@@ -34,6 +35,13 @@ function Player() {
       viewport?.follow(ref.current!, {});
     }
   }, [player.acceleration, viewport]);
+
+  useEffect(() => {
+    sound.play("fan_loop", {
+      loop: true,
+      filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
+    });
+  }, []);
 
   const ref = useRef<PixiSprite | null>(null);
 

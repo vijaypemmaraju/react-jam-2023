@@ -4,9 +4,10 @@ import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
 import { ColorSource } from "pixi.js";
-import { sound } from "@pixi/sound";
+import { IMediaInstance, Sound, sound } from "@pixi/sound";
 
 type GameObject = {
+  id?: number;
   position: { x: number; y: number };
   velocity: { x: number; y: number };
   acceleration: number;
@@ -19,6 +20,7 @@ type GameObject = {
   speedBoost?: number;
   tint?: ColorSource;
   playingSound?: boolean;
+  windSound?: IMediaInstance;
 };
 
 type Store = {
@@ -55,7 +57,7 @@ const useStore = create<Store>((set, get) => ({
     COHESION: 5,
     ALIGNMENT: 5,
     SEPARATION: 100,
-    HIGH_SPEED_THRESHOLD: 500,
+    HIGH_SPEED_THRESHOLD: 250,
   },
   player: {
     position: { x: 400, y: 270 },
@@ -92,8 +94,10 @@ const useStore = create<Store>((set, get) => ({
       Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
     const fanLoop = sound.find("fan_loop");
-    fanLoop.volume = 0.1 + (length / 1000) * 0.4;
-    fanLoop.speed = length / 1000;
+    if (fanLoop) {
+      fanLoop.volume = 0.1 + (length / 1000) * 0.4;
+      fanLoop.speed = length / 1000;
+    }
     newVelocity.x /= length;
     newVelocity.y /= length;
 
@@ -346,15 +350,23 @@ const useStore = create<Store>((set, get) => ({
         bird.lastRotation = rotation;
         bird.acceleration = length;
 
+        const volumeRelativeToPlayer = Math.max(
+          0,
+          (0.03 + Math.random() * 0.01) *
+            (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+        );
+
+        const fanLoop = sound.find(`fan_loop_${bird.id}`);
+        if (fanLoop) {
+          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
+          fanLoop.speed = length / 2000;
+        }
+
         if (!bird.playingSound) {
           sound.play(
             ["wing_flap", "wing_flap_2"][Math.floor(Math.random() * 2)],
             {
-              volume: Math.max(
-                0,
-                (0.03 + Math.random() * 0.01) *
-                  (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
-              ),
+              volume: volumeRelativeToPlayer,
               speed: 1.1 + Math.random() * 0.2 - 0.1,
               complete: () => {
                 setBirds((birds) => {

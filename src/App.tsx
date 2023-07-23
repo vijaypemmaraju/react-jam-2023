@@ -22,15 +22,10 @@ function App() {
 
   const mode = useStore((state) => state.mode);
 
+
   useEffect(() => {
     if (mode === "play") {
       setHasStarted(true);
-      sound.play("fan_loop", {
-        loop: true,
-        filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
-      });
-    } else {
-      sound.stop("fan_loop");
     }
   }, [mode]);
 
