@@ -95,7 +95,7 @@ const useStore = create<Store>((set, get) => ({
     );
     const fanLoop = sound.find("fan_loop");
     if (fanLoop) {
-      fanLoop.volume = 0.1 + (length / 1000) * 0.4;
+      fanLoop.volume = 0.1 + (length / 500) * 0.2;
       fanLoop.speed = length / 1000;
     }
     newVelocity.x /= length;
