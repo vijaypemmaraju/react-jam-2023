@@ -63,6 +63,7 @@ function Birds() {
           torque: 0,
           tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
             })`,
+          timeUntilNextFlapSound: 0,
         });
       }
     });

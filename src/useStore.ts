@@ -19,8 +19,7 @@ type GameObject = {
   emitter?: Emitter;
   speedBoost?: number;
   tint?: ColorSource;
-  playingSound?: boolean;
-  windSound?: IMediaInstance;
+  timeUntilNextFlapSound: number;
 };
 
 type Store = {
@@ -68,6 +67,7 @@ const useStore = create<Store>((set, get) => ({
     speedBoost: 1,
     rotation: 0,
     torque: 0,
+    timeUntilNextFlapSound: 0,
   },
   setPlayer: (fn) =>
     set(
@@ -142,21 +142,17 @@ const useStore = create<Store>((set, get) => ({
       ) +
       Math.min(player.torque, 0.0) * 2;
 
-    if (player.torque > 0.08 && !player.playingSound) {
+    if (player.torque > 0.08 && player.timeUntilNextFlapSound <= 0) {
       sound.play("woosh", {
         volume: 0.03,
         speed: 1 + Math.random() * 0.2 - 0.1,
-        complete: () => {
-          setPlayer((player) => {
-            player.playingSound = false;
-          });
-        },
       });
       setPlayer((player) => {
-        player.playingSound = true;
+        player.timeUntilNextFlapSound = Math.random() * 5 + 10;
       });
     }
     setPlayer((player) => {
+      player.timeUntilNextFlapSound -= delta;
       player.position = {
         x:
           position.x +
@@ -203,6 +199,7 @@ const useStore = create<Store>((set, get) => ({
 
       for (let i = 0; i < birds.length; i++) {
         bird = birds[i];
+        bird.timeUntilNextFlapSound -= delta;
         position = bird.position;
         lastVelocity = bird.lastVelocity;
 
@@ -362,20 +359,15 @@ const useStore = create<Store>((set, get) => ({
           fanLoop.speed = length / 2000;
         }
 
-        if (!bird.playingSound) {
+        if (bird.timeUntilNextFlapSound <= 0) {
           sound.play(
             ["wing_flap", "wing_flap_2"][Math.floor(Math.random() * 2)],
             {
               volume: volumeRelativeToPlayer,
               speed: 1.1 + Math.random() * 0.2 - 0.1,
-              complete: () => {
-                setBirds((birds) => {
-                  birds[i].playingSound = false;
-                });
-              },
             }
           );
-          bird.playingSound = true;
+          bird.timeUntilNextFlapSound = Math.random() * 10 + 25;
         }
 
         bird.emitter?.rotate(rotation + Math.PI);
