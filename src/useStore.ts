@@ -356,7 +356,8 @@ const useStore = create<Store>((set, get) => ({
 
         const fanLoop = sound.find(`fan_loop_${bird.id}`);
         if (fanLoop) {
-          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
+          fanLoop.volume =
+            Math.pow(volumeRelativeToPlayer, 2) * 1000 + length / 800000;
           fanLoop.speed = length / 2000;
           fanLoop.filters = fanLoopFilters;
         }
@@ -366,10 +367,10 @@ const useStore = create<Store>((set, get) => ({
             ["wing_flap", "wing_flap_2"][Math.floor(Math.random() * 2)],
             {
               volume: volumeRelativeToPlayer,
-              speed: 1.1 + Math.random() * 0.2 - 0.1,
+              speed: 3 + Math.random() * 0.5 - 0.25,
             }
           );
-          bird.timeUntilNextFlapSound = Math.random() * 10 + 25;
+          bird.timeUntilNextFlapSound = Math.random() * 60 + 25;
         }
 
         bird.emitter?.rotate(rotation + Math.PI);
@@ -393,7 +394,7 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation) * 4;
         bird.emitter!.emitNow();
         bird.emitter!.spawnChance =
-          Math.max((length - 100000) / 100000, 0) +
+          Math.max((length - 5000000) / 5000000, 0) +
           Math.min(bird.torque * 0.1, 0.01);
       }
     });
