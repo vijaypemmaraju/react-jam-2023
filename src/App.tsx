@@ -1,12 +1,13 @@
-import { Sprite, Text, useApp, useTick } from "@pixi/react";
-import { BlurFilter, TextStyle } from "pixi.js";
+import { Sprite, useApp, useTick } from "@pixi/react";
+import { BlurFilter } from "pixi.js";
 import { useEffect, useState } from "react";
 import "./App.css";
-import Birds from "./Bird";
+import Birds from "./Birds";
 import useStore from "./useStore";
 
 import Player from "./Player";
-import { filters, sound } from "@pixi/sound";
+import { sound } from "@pixi/sound";
+import Rivals from "./Rivals";
 
 function App() {
   const app = useApp();
@@ -55,6 +56,7 @@ function App() {
         <>
           <Player />
           <Birds />
+          <Rivals />
         </>
       )}
     </>

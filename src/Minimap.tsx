@@ -14,6 +14,7 @@ export interface RectangleProps {
 
 const Minimap: FC<RectangleProps> = (props) => {
   const birds = useStore((state) => state.birds);
+  const rivals = useStore((state) => state.rivals);
   const player = useStore((state) => state.player);
   const viewport = useStore((state) => state.viewport);
   const drawBackground = useCallback(
@@ -41,6 +42,15 @@ const Minimap: FC<RectangleProps> = (props) => {
         g.endFill();
       }
 
+      for (let i = 0; i < rivals.length; i++) {
+        const rival = rivals[i];
+        const x = (rival.position.x / viewport!.width) * props.width + props.x;
+        const y = (rival.position.y / viewport!.height) * props.height + props.y;
+        g.beginFill("0xFA0000");
+        g.drawRect(x, y, 4, 4);
+        g.endFill();
+      }
+
       // map player position to minimap position
       const x = (player.position.x / viewport!.width) * props.width + props.x;
       const y = (player.position.y / viewport!.height) * props.height + props.y;
@@ -48,7 +58,7 @@ const Minimap: FC<RectangleProps> = (props) => {
       g.drawRect(x, y, 4, 4);
       g.endFill();
     },
-    [props, birds, player, viewport],
+    [props, birds, rivals, player, viewport],
   );
 
   return (

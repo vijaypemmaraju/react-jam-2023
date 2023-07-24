@@ -8,10 +8,11 @@ import { Assets } from "pixi.js";
 import "./sounds";
 import Minimap from "./Minimap";
 import useStore from "./useStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const Root = () => {
   const mode = useStore((state) => state.mode);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -97,6 +98,7 @@ export const Root = () => {
             </motion.div>
             <motion.button
               className="mt-8 btn btn-primary"
+              disabled={isLoading}
               initial={{
                 opacity: 0,
                 position: "relative",
@@ -107,10 +109,20 @@ export const Root = () => {
                 top: mode === "main" ? 0 : 100,
               }}
               onClick={() => {
-                useStore.getState().setMode("play");
+                setIsLoading(true);
+                Promise.all([
+                  Assets.load("jay_sheet.json"),
+                  Assets.load("female_jay_sheet.json"),
+                  Assets.load("rival_sheet.json"),
+                  Assets.load("elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png"),
+                ]).then(() => {
+                  useStore.getState().setMode("play");
+                  setIsLoading(false);
+                });
               }}
             >
-              Play
+              {!isLoading && 'Play'}
+              {isLoading && <span className="loading loading-spinner loading-xs"></span>}
             </motion.button>
           </motion.div>
           <motion.div
@@ -158,7 +170,4 @@ container.id = "root";
 document.body.appendChild(container);
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 
-Promise.all([
-  Assets.load("jay_sheet.json"),
-  Assets.load("female_jay_sheet.json"),
-]).then(() => root.render(<Root />));
+root.render(<Root />)
