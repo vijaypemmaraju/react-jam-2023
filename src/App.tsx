@@ -26,6 +26,9 @@ function App() {
   useEffect(() => {
     if (mode === "play") {
       setHasStarted(true);
+      setTimeout(() => {
+        setShowRivals(true);
+      }, 1000);
       sound.play("ambient", {
         loop: true,
         volume: 0.1,
@@ -36,12 +39,15 @@ function App() {
   useTick((_delta, ticker) => {
     if (mode === "play") {
       ticker.speed = 1;
+      sound.resumeAll();
     } else {
       ticker.speed = 0;
+      sound.pauseAll();
     }
   });
 
   const [hasStarted, setHasStarted] = useState(false);
+  const [showRivals, setShowRivals] = useState(false);
 
   return (
     <>
@@ -56,7 +62,7 @@ function App() {
         <>
           <Player />
           <Birds />
-          <Rivals />
+          {showRivals && <Rivals />}
         </>
       )}
     </>

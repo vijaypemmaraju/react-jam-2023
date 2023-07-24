@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { Graphics, Text } from "@pixi/react";
 import { Graphics as PixiGraphics, TextStyle } from "pixi.js";
 import useStore from "./useStore";
@@ -81,16 +81,41 @@ const Minimap: FC<RectangleProps> = (props) => {
         );
         g.endFill();
       }
+      for (let i = 0; i < rivals.length; i++) {
+        const rival = rivals[i];
+        if (rival.zone) {
+          const x = (rival.zone.x / viewport!.width) * props.width + props.x;
+          const y = (rival.zone.y / viewport!.height) * props.height + props.y;
+          g.beginFill("0xFA0000");
+          g.alpha = 0.3;
+          g.drawRect(
+            x,
+            y,
+            (rival.zone.width / viewport!.width) * props.width,
+            (rival.zone.height / viewport!.height) * props.height
+          );
+          g.endFill();
+        }
+      }
     },
-    [props, player, viewport]
+    [props, player, viewport, rivals]
   );
+
+  const [showZones, setShowZones] = React.useState(false);
+  const mode = useStore((state) => state.mode);
+  useEffect(() => {
+    if (mode !== "play") return;
+    setTimeout(() => {
+      setShowZones(true);
+    }, 2500);
+  }, [mode]);
 
   return (
     <>
       <Graphics draw={drawBackground} />
       <Graphics draw={drawEntities} />
-      <Graphics draw={drawZones} />
-      {player.zone && (
+      {showZones && <Graphics draw={drawZones} />}
+      {showZones && player.zone && (
         <Text
           x={
             (player.zone.x / viewport!.width) * props.width +
@@ -114,6 +139,34 @@ const Minimap: FC<RectangleProps> = (props) => {
           }
         />
       )}
+      {showZones && rivals.map((rival, i) => {
+        if (!rival.zone) return null;
+        return (
+          <Text
+            key={i}
+            x={
+              (rival.zone.x / viewport!.width) * props.width +
+              props.x +
+              (rival.zone.width / viewport!.width) * props.width * 0.25
+            }
+            y={
+              (rival.zone.y / viewport!.height) * props.height +
+              props.y +
+              (rival.zone.height / viewport!.height) * props.height * 0.0125
+            }
+            text="🎉"
+            style={
+              new TextStyle({
+                align: "center",
+                fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+                fontSize:
+                  ((rival.zone.width / viewport!.width) * props.width) / 2,
+                fontWeight: "400",
+              })
+            }
+          />
+        );
+      })}
     </>
   );
 };

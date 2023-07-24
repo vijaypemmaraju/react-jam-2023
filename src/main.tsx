@@ -9,10 +9,12 @@ import "./sounds";
 import Minimap from "./Minimap";
 import useStore from "./useStore";
 import { useEffect, useState } from "react";
+import Score from "./Score";
 
 export const Root = () => {
   const mode = useStore((state) => state.mode);
   const [isLoading, setIsLoading] = useState(false);
+  const birds = useStore((state) => state.birds);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -38,6 +40,7 @@ export const Root = () => {
         <Viewport width={window.innerWidth} height={window.innerHeight}>
           <App />
         </Viewport>
+        <Score />
         <Minimap
           x={window.innerWidth * 0.85}
           y={window.innerWidth * 0.01}
@@ -71,7 +74,7 @@ export const Root = () => {
             opacity: 0,
           }}
           animate={{
-            opacity: ["main", "pause"].includes(mode) ? 1 : 0,
+            opacity: ["main", "pause", "end"].includes(mode) ? 1 : 0,
           }}
         >
           <motion.div
@@ -126,39 +129,105 @@ export const Root = () => {
             </motion.button>
           </motion.div>
           <motion.div
-            className="text-4xl text-white"
-            initial={{
-              opacity: 0,
-              position: "relative",
-              top: -100,
-              fontFamily: "Lumanosimo",
-            }}
+            className="flex flex-col items-center justify-center"
             animate={{
-              opacity: mode === "pause" ? 1 : 0,
-              top: mode === "pause" ? 0 : -100,
-              height: mode === "pause" ? "auto" : 0,
+              height: mode === "main" ? "auto" : 0,
             }}
           >
-            Paused
+            <motion.div
+              className="text-4xl text-white"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: -100,
+                fontFamily: "Lumanosimo",
+              }}
+              animate={{
+                opacity: mode === "pause" ? 1 : 0,
+                top: mode === "pause" ? 0 : -100,
+                height: mode === "pause" ? "auto" : 0,
+              }}
+            >
+              Paused
+            </motion.div>
+            <motion.button
+              className="mt-8 btn btn-primary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "pause" ? 1 : 0,
+                top: mode === "pause" ? 0 : 100,
+                minHeight: mode === "pause" ? "auto" : 0,
+              }}
+              onClick={() => {
+                useStore.getState().setMode("play");
+              }}
+            >
+              Resume
+            </motion.button>
           </motion.div>
-          <motion.button
-            className="mt-8 btn btn-primary"
-            initial={{
-              opacity: 0,
-              position: "relative",
-              top: 100,
-            }}
+          <motion.div
+            className="flex flex-col items-center justify-center"
             animate={{
-              opacity: mode === "pause" ? 1 : 0,
-              top: mode === "pause" ? 0 : 100,
-              minHeight: mode === "pause" ? "auto" : 0,
-            }}
-            onClick={() => {
-              useStore.getState().setMode("play");
+              height: mode === "end" ? "auto" : 0,
+              pointerEvents: mode === "end" ? "auto" : "none",
             }}
           >
-            Resume
-          </motion.button>
+            <motion.div
+              className="text-4xl text-white select-none"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: -100,
+                fontFamily: "Lumanosimo",
+              }}
+              animate={{
+                opacity: mode === "end" ? 1 : 0,
+                top: mode === "end" ? 0 : -100,
+                height: mode === "end" ? "auto" : 0,
+              }}
+            >
+              Game Over!
+            </motion.div>
+            <motion.div
+              className="text-4xl text-white select-none"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: -100,
+                fontFamily: "Lumanosimo",
+              }}
+              animate={{
+                opacity: mode === "end" ? 1 : 0,
+                top: mode === "end" ? 0 : -100,
+                height: mode === "end" ? "auto" : 0,
+              }}
+            >
+              {birds.filter(bird => bird.acquiredBy === 'player').length > birds.filter(bird => bird.acquiredBy === 'rival').length ? 'You won!' : 'You lost!'}
+            </motion.div>
+            <motion.button
+              className="mt-8 btn btn-primary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "end" ? 1 : 0,
+                top: mode === "end" ? 0 : 100,
+                minHeight: mode === "end" ? "auto" : 0,
+              }}
+              onClick={() => {
+                location.reload();
+              }}
+            >
+              Play Again
+            </motion.button>
+          </motion.div>
+
         </motion.div>
       </div>
     </div>

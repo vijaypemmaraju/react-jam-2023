@@ -44,8 +44,8 @@ function Player() {
     setPlayer((player) => {
       // find a random rectangle within the world of 0, 0, to 3072, 3072
       player.zone = new Rectangle(
-        Math.random() * (3072 - 512),
-        Math.random() * (3072 - 512),
+        Math.random() * (1536) + (1536 - 512),
+        Math.random() * (1536) + (1536 - 512),
         512,
         512,
       );

@@ -25,18 +25,20 @@ type GameObject = {
 
 type Bird = GameObject & {
   attractionPoint?: { x: number; y: number };
+  acquiredBy?: "player" | "rival" | null;
 };
 
 type Player = GameObject & {
   zone?: Rectangle;
 };
 
-type Rival = GameObject & {
+export type Rival = GameObject & {
   zone?: Rectangle;
+  attractionPoint?: { x: number; y: number };
 };
 
 type Store = {
-  mode: "main" | "play" | "pause";
+  mode: "main" | "play" | "pause" | "end";
   setMode: (mode: Store["mode"]) => void;
   player: Player;
   birds: Bird[];
@@ -314,8 +316,9 @@ const useStore = create<Store>((set, get) => ({
         const newVelocity = {
           x:
             closestSuitorAttraction.x *
-              (isCloseToPlayer &&
-              closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+              (closestSuitor === player &&
+              isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 10
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
@@ -326,8 +329,9 @@ const useStore = create<Store>((set, get) => ({
             separation.x * WEIGHTS.SEPARATION,
           y:
             closestSuitorAttraction.y *
-              (isCloseToPlayer &&
-              closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+              (closestSuitor === player &&
+              isCloseToPlayer &&
+              player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 100
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
@@ -393,6 +397,18 @@ const useStore = create<Store>((set, get) => ({
             x: player.zone.x + player.zone.width / 2,
             y: player.zone.y + player.zone.height / 2,
           };
+          bird.acquiredBy = "player";
+        }
+
+        for (let j = 0; j < rivals.length; j++) {
+          const rival = rivals[j];
+          if (rival.zone?.contains(bird.position.x, bird.position.y)) {
+            bird.attractionPoint = {
+              x: rival.zone.x + rival.zone.width / 2,
+              y: rival.zone.y + rival.zone.height / 2,
+            };
+            bird.acquiredBy = "rival";
+          }
         }
 
         bird.velocity = velocity;
@@ -457,18 +473,8 @@ const useStore = create<Store>((set, get) => ({
     });
   },
   updateRivals: (delta: number) => {
-    const { player, setRivals, WEIGHTS } = get();
+    const { player, birds, setRivals, WEIGHTS } = get();
     setRivals((rivals) => {
-      let rival,
-        position,
-        lastVelocity,
-        attractionLength,
-        centerOfScreenAttraction,
-        newVelocity,
-        length,
-        velocity,
-        velocityLength,
-        rotation;
       let cohesion, alignment, separation, distance;
       const center = { x: 0, y: 0 };
       const root = document.querySelector("canvas");
@@ -477,14 +483,47 @@ const useStore = create<Store>((set, get) => ({
       center.y = rect.height / 2;
 
       for (let i = 0; i < rivals.length; i++) {
-        rival = rivals[i];
-        rival.timeUntilNextFlapSound -= delta;
-        position = rival.position;
-        lastVelocity = rival.lastVelocity;
+        const rival = rivals[i];
 
-        centerOfScreenAttraction = {
-          x: center.x - position.x,
-          y: center.y - position.y,
+        rival.timeUntilNextFlapSound -= delta;
+        const position = rival.position;
+        const lastVelocity = rival.lastVelocity;
+
+        const unacquiredBirds = birds.filter((bird) => !bird.attractionPoint);
+
+        const numberOfNearbyUnacquiredBirds = unacquiredBirds.filter(
+          (bird) =>
+            Math.sqrt(
+              Math.pow(bird.position.x - position.x, 2) +
+                Math.pow(bird.position.y - position.y, 2)
+            ) < 200
+        ).length;
+
+        if (
+          rival.zone &&
+          (numberOfNearbyUnacquiredBirds > unacquiredBirds.length * 0.25 ||
+            unacquiredBirds.length === 0)
+        ) {
+          rival.attractionPoint = {
+            x: rival.zone.x + rival.zone.width / 2,
+            y: rival.zone.y + rival.zone.height / 2,
+          };
+        } else {
+          rival.attractionPoint = undefined;
+        }
+
+        const playerAttraction = {
+          x: player.position.x - position.x,
+          y: player.position.y - position.y,
+        };
+
+        const playerAttractionLength = Math.sqrt(
+          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
+        );
+
+        const pointAttraction = {
+          x: (rival.attractionPoint?.x || center.x) - position.x,
+          y: (rival.attractionPoint?.y || center.y) - position.y,
         };
 
         cohesion = { x: 0, y: 0 };
@@ -492,21 +531,21 @@ const useStore = create<Store>((set, get) => ({
         separation = { x: 0, y: 0 };
         let count = 0;
 
-        for (let j = 0; j < rivals.length; j++) {
+        for (let j = 0; j < birds.length; j++) {
           if (i !== j) {
             distance = Math.sqrt(
-              Math.pow(rivals[j].position.x - position.x, 2) +
-                Math.pow(rivals[j].position.y - position.y, 2)
+              Math.pow(birds[j].position.x - position.x, 2) +
+                Math.pow(birds[j].position.y - position.y, 2)
             );
             if (distance < WEIGHTS.FORCE_RADIUS) {
-              cohesion.x += rivals[j].position.x;
-              cohesion.y += rivals[j].position.y;
+              cohesion.x += birds[j].position.x;
+              cohesion.y += birds[j].position.y;
 
-              alignment.x += rivals[j].velocity.x;
-              alignment.y += rivals[j].velocity.y;
+              alignment.x += birds[j].velocity.x;
+              alignment.y += birds[j].velocity.y;
 
-              separation.x += (rivals[j].position.x - position.x) / distance;
-              separation.y += (rivals[j].position.y - position.y) / distance;
+              separation.x += (birds[j].position.x - position.x) / distance;
+              separation.y += (birds[j].position.y - position.y) / distance;
               count++;
             }
           }
@@ -523,22 +562,43 @@ const useStore = create<Store>((set, get) => ({
           separation.y *= -1;
         }
 
-        newVelocity = {
+        const distanceFromPlayerZone = {
+          x: player.zone!.x + player.zone!.width / 2 - position.x,
+          y: player.zone!.y + player.zone!.height / 2 - position.y,
+        };
+
+        const distanceFromPlayerZoneLength = Math.sqrt(
+          Math.pow(distanceFromPlayerZone.x, 2) +
+            Math.pow(distanceFromPlayerZone.y, 2)
+        );
+
+        const newVelocity = {
           x:
-            centerOfScreenAttraction.x * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            (1 - distanceFromPlayerZoneLength / 1000) *
+              distanceFromPlayerZone.x *
+              0.1 +
+            WEIGHTS.PLAYER_ATTRACTION +
+            pointAttraction.x +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.x * WEIGHTS.COHESION +
             alignment.x * WEIGHTS.ALIGNMENT +
             separation.x * WEIGHTS.SEPARATION,
           y:
-            centerOfScreenAttraction.y * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            (1 - distanceFromPlayerZoneLength / 1000) *
+              distanceFromPlayerZone.y *
+              0.1 +
+            WEIGHTS.PLAYER_ATTRACTION +
+            pointAttraction.y +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
             cohesion.y * WEIGHTS.COHESION +
             alignment.y * WEIGHTS.ALIGNMENT +
             separation.y * WEIGHTS.SEPARATION,
         };
 
-        length = Math.sqrt(
+        const length = Math.sqrt(
           Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
         );
+        const cappedLength = Math.min(length, 500000);
         if (length < 0.01) {
           continue;
         }
@@ -546,26 +606,27 @@ const useStore = create<Store>((set, get) => ({
         newVelocity.x /= length;
         newVelocity.y /= length;
 
-        velocity = {
+        const velocity = {
           x: lastVelocity.x * 0.989 + newVelocity.x * 0.011,
           y: lastVelocity.y * 0.989 + newVelocity.y * 0.011,
         };
 
-        velocityLength = Math.sqrt(
+        const velocityLength = Math.sqrt(
           Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        velocity.x *= 0.2;
-        velocity.y *= 0.2;
+        velocity.x *= rival.attractionPoint ? 0.1 : 0.2;
+        velocity.y *= rival.attractionPoint ? 0.1 : 0.2;
 
-        rotation = Math.atan2(velocity.y, velocity.x);
+        const rotation = Math.atan2(velocity.y, velocity.x);
 
         rival.position = {
-          x: position.x + velocity.x * delta * 25 + Math.random() - 0.5,
-          y: position.y + velocity.y * delta * 25 + Math.random() - 0.5,
+          x: position.x + velocity.x * delta * (25 + Math.random() - 0.5),
+          y: position.y + velocity.y * delta * (25 + Math.random() - 0.5),
         };
+
         rival.velocity = velocity;
         rival.lastVelocity = velocity;
         rival.rotation = rotation;
@@ -576,25 +637,15 @@ const useStore = create<Store>((set, get) => ({
         rival.lastRotation = rotation;
         rival.acceleration = length;
 
-        const playerAttraction = {
-          x: player.position.x - position.x,
-          y: player.position.y - position.y,
-        };
-
-        attractionLength = Math.sqrt(
-          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
-        );
-
         const volumeRelativeToPlayer = Math.max(
           0,
-          (0.03 + Math.random() * 0.01) *
-            (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+          (0.01 + Math.random() * 0.01) *
+            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
 
         const fanLoop = sound.find(`fan_loop_${rival.id}`);
         if (fanLoop) {
-          fanLoop.volume =
-            Math.pow(volumeRelativeToPlayer, 2) * 1000 + length / 800000;
+          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
           fanLoop.speed = length / 2000;
           fanLoop.filters = fanLoopFilters;
         }
@@ -631,7 +682,7 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation) * 4;
         rival.emitter!.emitNow();
         rival.emitter!.spawnChance =
-          Math.max((length - 5000000) / 5000000, 0) +
+          Math.max((cappedLength - 5000000) / 5000000, 0) +
           Math.min(rival.torque * 0.1, 0.01);
       }
     });
