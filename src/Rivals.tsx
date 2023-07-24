@@ -29,7 +29,7 @@ function Rivals() {
 
   useEffect(() => {
     setRivals((rivals) => {
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 0; i++) {
         const random = Math.random();
         sound.add(`fan_loop_rival_${i}`, "sounds/fan_loop.ogg");
         sound.play(`fan_loop_rival_${i}`, {

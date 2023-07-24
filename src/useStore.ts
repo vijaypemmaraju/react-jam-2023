@@ -3,7 +3,7 @@ import { produce } from "immer";
 import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
-import { ColorSource } from "pixi.js";
+import { ColorSource, Rectangle } from "pixi.js";
 import { sound } from "@pixi/sound";
 import { fanLoopFilters } from "./sounds";
 
@@ -23,12 +23,24 @@ type GameObject = {
   timeUntilNextFlapSound: number;
 };
 
+type Bird = GameObject & {
+  attractionPoint?: { x: number; y: number };
+};
+
+type Player = GameObject & {
+  zone?: Rectangle;
+};
+
+type Rival = GameObject & {
+  zone?: Rectangle;
+};
+
 type Store = {
   mode: "main" | "play" | "pause";
   setMode: (mode: Store["mode"]) => void;
-  player: GameObject;
-  birds: GameObject[];
-  rivals: GameObject[];
+  player: Player;
+  birds: Bird[];
+  rivals: Rival[];
   setPlayer: (fn: (draft: Store["player"]) => void) => void;
   setBirds: (fn: (draft: Store["birds"]) => void) => void;
   setRivals: (fn: (draft: Store["rivals"]) => void) => void;
@@ -53,7 +65,7 @@ const useStore = create<Store>((set, get) => ({
   mode: "main",
   setMode: (mode) => set({ mode }),
   WEIGHTS: {
-    PLAYER_ATTRACTION: 10,
+    PLAYER_ATTRACTION: 20,
     CENTER_OF_SCREEN_ATTRACTION: 1,
     ATTRACTION_RADIUS: 300,
     FORCE_RADIUS: 400,
@@ -154,7 +166,7 @@ const useStore = create<Store>((set, get) => ({
       ) +
       Math.min(player.torque, 0.0) * 2;
 
-    if (player.torque > 0.08 && player.timeUntilNextFlapSound <= 0) {
+    if (player.torque > 0.1 && player.timeUntilNextFlapSound <= 0) {
       sound.play("woosh", {
         volume: 0.03,
         speed: 1 + Math.random() * 0.2 - 0.1,
@@ -191,17 +203,6 @@ const useStore = create<Store>((set, get) => ({
   updateBirds: (delta: number) => {
     const { player, rivals, setBirds, WEIGHTS } = get();
     setBirds((birds) => {
-      let bird,
-        position,
-        lastVelocity,
-        playerAttraction,
-        attractionLength,
-        centerOfScreenAttraction,
-        newVelocity,
-        length,
-        velocity,
-        velocityLength,
-        rotation;
       let cohesion, alignment, separation, distance;
       const center = { x: 0, y: 0 };
       const root = document.querySelector("canvas");
@@ -209,59 +210,69 @@ const useStore = create<Store>((set, get) => ({
       center.x = rect.width / 2;
       center.y = rect.height / 2;
 
-      const suitors = [player, ...rivals];
-
       for (let i = 0; i < birds.length; i++) {
+        const bird = birds[i];
+        const suitors = bird.attractionPoint ? [] : [player, ...rivals];
         let closestSuitor = null;
         let closestDistance = Infinity;
-        for (let j = 0; j < suitors.length; j++) {
-          const suitor = suitors[j];
-          const distance = Math.sqrt(
-            Math.pow(suitor.position.x - birds[i].position.x, 2) +
-              Math.pow(suitor.position.y - birds[i].position.y, 2)
-          );
+        if (!bird.attractionPoint) {
+          for (let j = 0; j < suitors.length; j++) {
+            const suitor = suitors[j];
+            const distance = Math.sqrt(
+              Math.pow(suitor.position.x - birds[i].position.x, 2) +
+                Math.pow(suitor.position.y - birds[i].position.y, 2)
+            );
 
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestSuitor = suitor;
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestSuitor = suitor;
+            }
           }
         }
-
         if (!closestSuitor) {
           closestSuitor = player;
         }
 
-        bird = birds[i];
         bird.timeUntilNextFlapSound -= delta;
-        position = bird.position;
-        lastVelocity = bird.lastVelocity;
+        const position = bird.position;
+        const lastVelocity = bird.lastVelocity;
 
-        playerAttraction = {
+        const closestSuitorAttraction = {
           x: closestSuitor.position.x - position.x,
           y: closestSuitor.position.y - position.y,
         };
 
-        attractionLength = Math.sqrt(
+        const playerAttraction = {
+          x: player.position.x - position.x,
+          y: player.position.y - position.y,
+        };
+
+        const playerAttractionLength = Math.sqrt(
           Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
 
-        const isCloseToPlayer = attractionLength < WEIGHTS.ATTRACTION_RADIUS;
+        const isCloseToPlayer =
+          !bird.attractionPoint &&
+          playerAttractionLength < WEIGHTS.ATTRACTION_RADIUS;
 
-        if (closestSuitor === player && !isCloseToPlayer) {
-          playerAttraction.x = 0;
-          playerAttraction.y = 0;
+        if (
+          bird.attractionPoint ||
+          (closestSuitor === player && !isCloseToPlayer)
+        ) {
+          closestSuitorAttraction.x = 0;
+          closestSuitorAttraction.y = 0;
         }
         if (
           closestSuitor === player &&
           closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
         ) {
-          playerAttraction.x *= -10;
-          playerAttraction.y *= -10;
+          closestSuitorAttraction.x *= -10;
+          closestSuitorAttraction.y *= -10;
         }
 
-        centerOfScreenAttraction = {
-          x: center.x - position.x,
-          y: center.y - position.y,
+        const pointAttraction = {
+          x: (bird.attractionPoint?.x || center.x) - position.x,
+          y: (bird.attractionPoint?.y || center.y) - position.y,
         };
 
         cohesion = { x: 0, y: 0 };
@@ -300,34 +311,37 @@ const useStore = create<Store>((set, get) => ({
           separation.y *= -1;
         }
 
-        newVelocity = {
+        const newVelocity = {
           x:
-            playerAttraction.x *
+            closestSuitorAttraction.x *
               (isCloseToPlayer &&
               closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 10
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
-            centerOfScreenAttraction.x * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
-            cohesion.x * WEIGHTS.COHESION +
+            (bird.attractionPoint ? 1000000 : 1) * pointAttraction.x +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            cohesion.x * (bird.attractionPoint ? 1000 : 1) * WEIGHTS.COHESION +
             alignment.x * WEIGHTS.ALIGNMENT +
             separation.x * WEIGHTS.SEPARATION,
           y:
-            playerAttraction.y *
+            closestSuitorAttraction.y *
               (isCloseToPlayer &&
               closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 100
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
-            centerOfScreenAttraction.y * WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
-            cohesion.y * WEIGHTS.COHESION +
+            (bird.attractionPoint ? 1000000 : 1) * pointAttraction.y +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            cohesion.y * (bird.attractionPoint ? 1000 : 1) * WEIGHTS.COHESION +
             alignment.y * WEIGHTS.ALIGNMENT +
             separation.y * WEIGHTS.SEPARATION,
         };
 
-        length = Math.sqrt(
+        const length = Math.sqrt(
           Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
         );
+        const cappedLength = Math.min(length, 500000);
         if (length < 0.01) {
           continue;
         }
@@ -335,21 +349,21 @@ const useStore = create<Store>((set, get) => ({
         newVelocity.x /= length;
         newVelocity.y /= length;
 
-        velocity = {
+        const velocity = {
           x: lastVelocity.x * 0.989 + newVelocity.x * 0.011,
           y: lastVelocity.y * 0.989 + newVelocity.y * 0.011,
         };
 
-        velocityLength = Math.sqrt(
+        const velocityLength = Math.sqrt(
           Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        velocity.x *= 0.2;
-        velocity.y *= 0.2;
+        velocity.x *= bird.attractionPoint ? 0.1 : 0.2;
+        velocity.y *= bird.attractionPoint ? 0.1 : 0.2;
 
-        rotation = Math.atan2(velocity.y, velocity.x);
+        const rotation = Math.atan2(velocity.y, velocity.x);
 
         bird.position = {
           x:
@@ -373,6 +387,14 @@ const useStore = create<Store>((set, get) => ({
                 Math.random() -
                 0.5),
         };
+
+        if (player.zone?.contains(bird.position.x, bird.position.y)) {
+          bird.attractionPoint = {
+            x: player.zone.x + player.zone.width / 2,
+            y: player.zone.y + player.zone.height / 2,
+          };
+        }
+
         bird.velocity = velocity;
         bird.lastVelocity = velocity;
         bird.rotation = rotation;
@@ -385,14 +407,13 @@ const useStore = create<Store>((set, get) => ({
 
         const volumeRelativeToPlayer = Math.max(
           0,
-          (0.03 + Math.random() * 0.01) *
-            (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+          (0.01 + Math.random() * 0.01) *
+            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
 
         const fanLoop = sound.find(`fan_loop_${bird.id}`);
         if (fanLoop) {
-          fanLoop.volume =
-            Math.pow(volumeRelativeToPlayer, 2) * 1000 + length / 800000;
+          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
           fanLoop.speed = length / 2000;
           fanLoop.filters = fanLoopFilters;
         }
@@ -429,8 +450,9 @@ const useStore = create<Store>((set, get) => ({
           Math.sin(rotation) * 4;
         bird.emitter!.emitNow();
         bird.emitter!.spawnChance =
-          Math.max((length - 5000000) / 5000000, 0) +
-          Math.min(bird.torque * 0.1, 0.01);
+          Math.max((cappedLength - 5000000) / 5000000, 0) +
+          Math.min(bird.torque * 0.1, 0.01) +
+          (bird.attractionPoint ? 0.1 : 0);
       }
     });
   },

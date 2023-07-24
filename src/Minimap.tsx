@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from "react";
-import { Graphics } from "@pixi/react";
-import { Graphics as PixiGraphics } from "pixi.js";
+import { Graphics, Text } from "@pixi/react";
+import { Graphics as PixiGraphics, TextStyle } from "pixi.js";
 import useStore from "./useStore";
 
 export interface RectangleProps {
@@ -25,19 +25,20 @@ const Minimap: FC<RectangleProps> = (props) => {
       g.drawRect(props.x, props.y, props.width, props.height);
       g.endFill();
     },
-    [props],
+    [props]
   );
 
   const drawEntities = useCallback(
     (g: PixiGraphics) => {
       g.clear();
-      g.alpha = 0.8;
+
       for (let i = 0; i < birds.length; i++) {
         const bird = birds[i];
         // map bird position to minimap position
         const x = (bird.position.x / viewport!.width) * props.width + props.x;
         const y = (bird.position.y / viewport!.height) * props.height + props.y;
         g.beginFill("0xFFFFFF");
+        g.alpha = 0.8;
         g.drawRect(x, y, 1, 1);
         g.endFill();
       }
@@ -45,8 +46,10 @@ const Minimap: FC<RectangleProps> = (props) => {
       for (let i = 0; i < rivals.length; i++) {
         const rival = rivals[i];
         const x = (rival.position.x / viewport!.width) * props.width + props.x;
-        const y = (rival.position.y / viewport!.height) * props.height + props.y;
+        const y =
+          (rival.position.y / viewport!.height) * props.height + props.y;
         g.beginFill("0xFA0000");
+        g.alpha = 0.8;
         g.drawRect(x, y, 4, 4);
         g.endFill();
       }
@@ -55,16 +58,62 @@ const Minimap: FC<RectangleProps> = (props) => {
       const x = (player.position.x / viewport!.width) * props.width + props.x;
       const y = (player.position.y / viewport!.height) * props.height + props.y;
       g.beginFill("0x0000FA");
+      g.alpha = 0.8;
       g.drawRect(x, y, 4, 4);
       g.endFill();
     },
-    [props, birds, rivals, player, viewport],
+    [props, birds, rivals, player, viewport]
+  );
+
+  const drawZones = useCallback(
+    (g: PixiGraphics) => {
+      g.clear();
+      if (player.zone) {
+        const x = (player.zone.x / viewport!.width) * props.width + props.x;
+        const y = (player.zone.y / viewport!.height) * props.height + props.y;
+        g.beginFill("0x0000FA");
+        g.alpha = 0.3;
+        g.drawRect(
+          x,
+          y,
+          (player.zone.width / viewport!.width) * props.width,
+          (player.zone.height / viewport!.height) * props.height
+        );
+        g.endFill();
+      }
+    },
+    [props, player, viewport]
   );
 
   return (
     <>
       <Graphics draw={drawBackground} />
       <Graphics draw={drawEntities} />
+      <Graphics draw={drawZones} />
+      {player.zone && (
+        <Text
+          x={
+            (player.zone.x / viewport!.width) * props.width +
+            props.x +
+            (player.zone.width / viewport!.width) * props.width * 0.25
+          }
+          y={
+            (player.zone.y / viewport!.height) * props.height +
+            props.y +
+            (player.zone.height / viewport!.height) * props.height * 0.0125
+          }
+          text="🎉"
+          style={
+            new TextStyle({
+              align: "center",
+              fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+              fontSize:
+                ((player.zone.width / viewport!.width) * props.width) / 2,
+              fontWeight: "400",
+            })
+          }
+        />
+      )}
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
-import { AnimatedSprite, useTick, useApp } from "@pixi/react";
-import { Point, Sprite as PixiSprite, Texture } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { AnimatedSprite, useTick, useApp, Graphics, Text } from "@pixi/react";
+import { Graphics as PixiGraphics, Point, Rectangle, Sprite as PixiSprite, Texture } from "pixi.js";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
 import { emitterConfig } from "./emitterConfig";
@@ -41,7 +41,16 @@ function Player() {
       loop: true,
       filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
     });
-  }, []);
+    setPlayer((player) => {
+      // find a random rectangle within the world of 0, 0, to 3072, 3072
+      player.zone = new Rectangle(
+        Math.random() * (3072 - 512),
+        Math.random() * (3072 - 512),
+        512,
+        512,
+      );
+    });
+  }, [setPlayer]);
 
   const ref = useRef<PixiSprite | null>(null);
 
@@ -58,6 +67,22 @@ function Player() {
     });
     updatePlayer(delta);
   });
+
+
+  const drawZone = useCallback(
+    (g: PixiGraphics) => {
+      if (!player.zone) return;
+      g.clear();
+      g.lineStyle(1, 0x0000ff, 1);
+      g.drawRect(
+        player.zone.x,
+        player.zone.y,
+        player.zone.width,
+        player.zone.height,
+      );
+    },
+    [player.zone],
+  );
 
   if (frames.length === 0) return null;
 
@@ -89,6 +114,10 @@ function Player() {
           y: 1 - Math.min((player.torque || 0) * 2, 0.5),
         }}
       />
+      <Graphics draw={drawZone} />
+      {player.zone && (
+        <Text x={player.zone.x} y={player.zone.y} text="Party Zone" />
+      )}
     </>
   );
 }
