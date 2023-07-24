@@ -4,7 +4,7 @@ import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
 import { ColorSource } from "pixi.js";
-import { filters, IMediaInstance, Sound, sound } from "@pixi/sound";
+import { sound } from "@pixi/sound";
 import { fanLoopFilters } from "./sounds";
 
 type GameObject = {
@@ -74,14 +74,14 @@ const useStore = create<Store>((set, get) => ({
     set(
       produce((draft) => {
         fn(draft.player);
-      })
+      }),
     ),
   birds: [],
   setBirds: (fn) =>
     set(
       produce((draft) => {
         fn(draft.birds);
-      })
+      }),
     ),
   updatePlayer: (delta: number) => {
     const { player, setPlayer, WEIGHTS } = get();
@@ -92,7 +92,7 @@ const useStore = create<Store>((set, get) => ({
       y: destination.y - position.y,
     };
     const length = Math.sqrt(
-      Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
+      Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2),
     );
     const fanLoop = sound.find("fan_loop");
     if (fanLoop) {
@@ -107,7 +107,7 @@ const useStore = create<Store>((set, get) => ({
       y: lastVelocity.y * 0.97 + newVelocity.y * 0.03,
     };
     const velocityMagnitude = Math.sqrt(
-      Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
+      Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2),
     );
 
     if (velocityMagnitude < 0.02) {
@@ -139,7 +139,7 @@ const useStore = create<Store>((set, get) => ({
     player.emitter!.spawnChance =
       Math.max(
         (length - WEIGHTS.HIGH_SPEED_THRESHOLD) / WEIGHTS.HIGH_SPEED_THRESHOLD,
-        0
+        0,
       ) +
       Math.min(player.torque, 0.0) * 2;
 
@@ -210,7 +210,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         attractionLength = Math.sqrt(
-          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
+          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2),
         );
 
         const isCloseToPlayer = attractionLength < WEIGHTS.ATTRACTION_RADIUS;
@@ -238,7 +238,7 @@ const useStore = create<Store>((set, get) => ({
           if (i !== j) {
             distance = Math.sqrt(
               Math.pow(birds[j].position.x - position.x, 2) +
-                Math.pow(birds[j].position.y - position.y, 2)
+                Math.pow(birds[j].position.y - position.y, 2),
             );
             if (distance < WEIGHTS.FORCE_RADIUS) {
               cohesion.x += birds[j].position.x;
@@ -291,7 +291,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         length = Math.sqrt(
-          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
+          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2),
         );
         if (length < 0.01) {
           continue;
@@ -306,7 +306,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         velocityLength = Math.sqrt(
-          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
+          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2),
         );
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
@@ -351,7 +351,7 @@ const useStore = create<Store>((set, get) => ({
         const volumeRelativeToPlayer = Math.max(
           0,
           (0.03 + Math.random() * 0.01) *
-            (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS)
+            (1 - attractionLength / WEIGHTS.ATTRACTION_RADIUS),
         );
 
         const fanLoop = sound.find(`fan_loop_${bird.id}`);
@@ -368,7 +368,7 @@ const useStore = create<Store>((set, get) => ({
             {
               volume: volumeRelativeToPlayer,
               speed: 3 + Math.random() * 0.5 - 0.25,
-            }
+            },
           );
           bird.timeUntilNextFlapSound = Math.random() * 60 + 25;
         }

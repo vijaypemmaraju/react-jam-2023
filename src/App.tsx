@@ -22,14 +22,13 @@ function App() {
 
   const mode = useStore((state) => state.mode);
 
-
   useEffect(() => {
     if (mode === "play") {
       setHasStarted(true);
-      sound.play('ambient', {
+      sound.play("ambient", {
         loop: true,
         volume: 0.1,
-      })
+      });
     }
   }, [mode]);
 

@@ -34,10 +34,7 @@ function Birds() {
         sound.add(`fan_loop_${i}`, "sounds/fan_loop.ogg");
         sound.play(`fan_loop_${i}`, {
           loop: true,
-          filters: [
-            new filters.TelephoneFilter(),
-            new filters.ReverbFilter(),
-          ],
+          filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
           volume: 0.1,
         });
         birds.push({
@@ -61,8 +58,9 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
           timeUntilNextFlapSound: 0,
         });
       }

@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Lumanosimo';
-  src: url('./assets/fonts/Lumanosimo/Lumanosimo-Regular.ttf');
+  font-family: "Lumanosimo";
+  src: url("./assets/fonts/Lumanosimo/Lumanosimo-Regular.ttf");
 }

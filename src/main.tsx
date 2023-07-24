@@ -46,7 +46,10 @@ export const Root = () => {
           alpha={0.2}
         />
       </Stage>
-      <div className="fixed w-[100vw] h-[100vh] flex items-center justify-center" style={{ pointerEvents: mode === "play" ? "none" : "auto" }}>
+      <div
+        className="fixed w-[100vw] h-[100vh] flex items-center justify-center"
+        style={{ pointerEvents: mode === "play" ? "none" : "auto" }}
+      >
         <motion.div
           className="fixed bg-black w-[100vw] h-[100vh]"
           initial={{
