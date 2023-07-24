@@ -108,6 +108,7 @@ const useStore = create<Store>((set, get) => ({
     if (fanLoop) {
       fanLoop.volume = 0.1 + (length / 500) * 0.2;
       fanLoop.speed = length / 1000;
+      fanLoop.filters = fanLoopFilters;
     }
     newVelocity.x /= length;
     newVelocity.y /= length;
