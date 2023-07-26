@@ -254,6 +254,7 @@ const useStore = create<Store>((set, get) => ({
         );
 
         const isCloseToPlayer =
+          closestSuitor === player &&
           !bird.attractionPoint &&
           playerAttractionLength < WEIGHTS.ATTRACTION_RADIUS;
 
