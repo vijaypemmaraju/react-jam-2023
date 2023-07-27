@@ -33,6 +33,10 @@ function App() {
         loop: true,
         volume: 0.1,
       });
+      sound.play("song", {
+        loop: true,
+        volume: 0.1,
+      });
     }
   }, [mode]);
 
