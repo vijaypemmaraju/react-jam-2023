@@ -5,7 +5,8 @@ sound.add("wing_flap", "sounds/wing_flap.wav");
 sound.add("wing_flap_2", "sounds/wing_flap_2.wav");
 sound.add("woosh", "sounds/woosh.flac");
 sound.add("fan_loop", "sounds/fan_loop.mp3");
-sound.add("song", "sounds/jaybae.flac");
+sound.add("song_upper", "sounds/jaybae_upper.flac");
+sound.add("song_lower", "sounds/jaybae_lower.flac");
 
 export const fanLoopFilters = [
   new filters.TelephoneFilter(),

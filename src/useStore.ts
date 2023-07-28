@@ -128,6 +128,20 @@ const useStore = create<Store>((set, get) => ({
       fanLoop.speed = length / 1000;
       fanLoop.filters = fanLoopFilters;
     }
+    const partySound = sound.find("song_lower");
+    const zone = player.zone;
+    if (zone) {
+      const distanceFromZone = Math.sqrt(
+        Math.pow(zone.x - position.x, 2) + Math.pow(zone.y - position.y, 2)
+      );
+      const maxDistance = 700;
+      partySound.volume = Math.max(
+        0,
+        1 - Math.min(distanceFromZone / maxDistance, 1)
+      );
+    } else {
+      partySound.volume = 0;
+    }
     newVelocity.x /= length;
     newVelocity.y /= length;
 

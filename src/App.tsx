@@ -33,7 +33,11 @@ function App() {
         loop: true,
         volume: 0.1,
       });
-      sound.play("song", {
+      sound.play("song_upper", {
+        loop: true,
+        volume: 0.1,
+      });
+      sound.play("song_lower", {
         loop: true,
         volume: 0.1,
       });

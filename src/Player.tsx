@@ -101,13 +101,13 @@ function Player() {
         let y = center.y + Math.sin(angle) * rect.radius;
         x +=
           (dataArray[
-            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+            Math.floor((i + 5 * dataArray.length / 6) % (dataArray.length / 2))
           ] /
             255) *
           200;
         y +=
           (dataArray[
-            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+            Math.floor((i + 5 * dataArray.length / 6) % (dataArray.length / 2))
           ] /
             255) *
           200;
