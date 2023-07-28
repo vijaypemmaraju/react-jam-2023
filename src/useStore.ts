@@ -51,6 +51,8 @@ type Store = {
   updateRivals: (delta: number) => void;
   viewport: PixiViewport | null;
   setViewport: (viewport: PixiViewport) => void;
+  audioDataArray: Uint8Array;
+  setAudioDataArray: (audioDataArray: Uint8Array) => void;
   WEIGHTS: {
     PLAYER_ATTRACTION: number;
     CENTER_OF_SCREEN_ATTRACTION: number;
@@ -66,6 +68,8 @@ type Store = {
 const useStore = create<Store>((set, get) => ({
   mode: "main",
   setMode: (mode) => set({ mode }),
+  audioDataArray: new Uint8Array(0),
+  setAudioDataArray: (audioDataArray) => set({ audioDataArray }),
   WEIGHTS: {
     PLAYER_ATTRACTION: 20,
     CENTER_OF_SCREEN_ATTRACTION: 1,
@@ -203,7 +207,7 @@ const useStore = create<Store>((set, get) => ({
     });
   },
   updateBirds: (delta: number) => {
-    const { player, rivals, setBirds, WEIGHTS } = get();
+    const { player, rivals, setBirds, WEIGHTS, audioDataArray } = get();
     setBirds((birds) => {
       let cohesion, alignment, separation, distance;
       const center = { x: 0, y: 0 };
@@ -365,8 +369,12 @@ const useStore = create<Store>((set, get) => ({
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        velocity.x *= bird.attractionPoint ? 0.1 : 0.2;
-        velocity.y *= bird.attractionPoint ? 0.1 : 0.2;
+        velocity.x *= bird.attractionPoint
+          ? Math.pow(audioDataArray[0] / 255, 6) / 3
+          : 0.2;
+        velocity.y *= bird.attractionPoint
+          ? Math.pow(audioDataArray[0] / 255, 6) / 3
+          : 0.2;
 
         const rotation = Math.atan2(velocity.y, velocity.x);
 

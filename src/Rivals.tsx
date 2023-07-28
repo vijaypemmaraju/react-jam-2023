@@ -24,7 +24,7 @@ function Rivals() {
   const player = useStore((state) => state.player);
   const setRivals = useStore((state) => state.setRivals);
   const updateRivals = useStore((state) => state.updateRivals);
-  const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array(0));
+  const dataArray = useStore((state) => state.audioDataArray);
   const [frames, setFrames] = useState<Texture[]>([]);
 
   useEffect(() => {
@@ -94,12 +94,6 @@ function Rivals() {
 
   useTick((delta) => {
     updateRivals(delta);
-    const context = sound.context as WebAudioContext;
-    const analyser = context.analyser;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    analyser.getByteFrequencyData(dataArray);
-    setDataArray(dataArray);
   });
 
   const drawZone = useCallback(

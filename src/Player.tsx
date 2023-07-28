@@ -26,7 +26,8 @@ function Player() {
   const app = useApp();
 
   const viewport = useStore((state) => state.viewport);
-  const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array(0));
+  const dataArray = useStore((state) => state.audioDataArray);
+  const setDataArray = useStore((state) => state.setAudioDataArray);
 
   const [frames, setFrames] = useState<Texture[]>([]);
 
