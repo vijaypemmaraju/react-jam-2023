@@ -384,10 +384,10 @@ const useStore = create<Store>((set, get) => ({
         velocity.y /= velocityLength;
 
         velocity.x *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 6) / 3
+          ? Math.pow(audioDataArray[0] / 255, 5) / 2
           : 0.2;
         velocity.y *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 6) / 3
+          ? Math.pow(audioDataArray[0] / 255, 5) / 2
           : 0.2;
 
         const rotation = Math.atan2(velocity.y, velocity.x);

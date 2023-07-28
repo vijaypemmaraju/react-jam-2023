@@ -51,6 +51,15 @@ function App() {
         });
         isPlaying = true;
       }
+      const upper = sound.find('song_upper');
+      if (upper) {
+        sound.stop("song_lower");
+        sound.play("song_lower", {
+          loop: true,
+          volume: 0.1,
+          start: upper.instances[0].progress,
+        });
+      }
       ticker.speed = 1;
       sound.resumeAll();
     } else {
