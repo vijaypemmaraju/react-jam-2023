@@ -3,7 +3,7 @@ import { produce } from "immer";
 import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
-import { ColorSource, Rectangle } from "pixi.js";
+import { Circle, ColorSource } from "pixi.js";
 import { sound } from "@pixi/sound";
 import { fanLoopFilters } from "./sounds";
 
@@ -29,11 +29,11 @@ type Bird = GameObject & {
 };
 
 type Player = GameObject & {
-  zone?: Rectangle;
+  zone?: Circle;
 };
 
 export type Rival = GameObject & {
-  zone?: Rectangle;
+  zone?: Circle;
   attractionPoint?: { x: number; y: number };
 };
 
@@ -395,8 +395,8 @@ const useStore = create<Store>((set, get) => ({
 
         if (player.zone?.contains(bird.position.x, bird.position.y)) {
           bird.attractionPoint = {
-            x: player.zone.x + player.zone.width / 2,
-            y: player.zone.y + player.zone.height / 2,
+            x: player.zone.x,
+            y: player.zone.y,
           };
           bird.acquiredBy = "player";
         }
@@ -405,8 +405,8 @@ const useStore = create<Store>((set, get) => ({
           const rival = rivals[j];
           if (rival.zone?.contains(bird.position.x, bird.position.y)) {
             bird.attractionPoint = {
-              x: rival.zone.x + rival.zone.width / 2,
-              y: rival.zone.y + rival.zone.height / 2,
+              x: rival.zone.x,
+              y: rival.zone.y,
             };
             bird.acquiredBy = "rival";
           }
@@ -506,8 +506,8 @@ const useStore = create<Store>((set, get) => ({
             unacquiredBirds.length === 0)
         ) {
           rival.attractionPoint = {
-            x: rival.zone.x + rival.zone.width / 2,
-            y: rival.zone.y + rival.zone.height / 2,
+            x: rival.zone.x + rival.zone.radius,
+            y: rival.zone.y + rival.zone.radius,
           };
         } else {
           rival.attractionPoint = undefined;
@@ -564,8 +564,8 @@ const useStore = create<Store>((set, get) => ({
         }
 
         const distanceFromPlayerZone = {
-          x: player.zone!.x + player.zone!.width / 2 - position.x,
-          y: player.zone!.y + player.zone!.height / 2 - position.y,
+          x: player.zone!.x + player.zone!.radius - position.x,
+          y: player.zone!.y + player.zone!.radius - position.y,
         };
 
         const distanceFromPlayerZoneLength = Math.sqrt(

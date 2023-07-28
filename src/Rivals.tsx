@@ -1,7 +1,16 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { useTick, useApp, AnimatedSprite, Graphics, Text } from "@pixi/react";
 import { filters, sound } from "@pixi/sound";
-import { Graphics as PixiGraphics, Assets, Texture, Rectangle } from "pixi.js";
+import { WebAudioContext } from "@pixi/sound/lib/webaudio";
+import {
+  Graphics as PixiGraphics,
+  Assets,
+  Texture,
+  Circle,
+  Point,
+  TextStyle,
+  TextMetrics,
+} from "pixi.js";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
@@ -15,7 +24,7 @@ function Rivals() {
   const player = useStore((state) => state.player);
   const setRivals = useStore((state) => state.setRivals);
   const updateRivals = useStore((state) => state.updateRivals);
-
+  const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array(0));
   const [frames, setFrames] = useState<Texture[]>([]);
 
   useEffect(() => {
@@ -32,13 +41,18 @@ function Rivals() {
     setRivals((rivals) => {
       for (let i = 0; i < 1; i++) {
         // generate a rectangle that does not overlap with player.zone
-        let zone: Rectangle | null = null;
-        while (!zone || zone.intersects(player.zone!)) {
-          zone = new Rectangle(
-            Math.random() * (1536) + (1536 - 512),
-            Math.random() * (1536) + (1536 - 512),
-            512,
-            512,
+        let zone: Circle | null = null;
+        while (
+          !zone ||
+          Math.sqrt(
+            Math.pow(zone.x - player.zone!.x, 2) +
+            Math.pow(zone.y - player.zone!.y, 2),
+          ) < 512
+        ) {
+          zone = new Circle(
+            Math.random() * 1536 + (1536 - 512),
+            Math.random() * 1536 + (1536 - 512),
+            256,
           );
         }
         const random = Math.random();
@@ -72,7 +86,7 @@ function Rivals() {
           tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
             })`,
           timeUntilNextFlapSound: 0,
-          zone
+          zone,
         });
       }
     });
@@ -80,6 +94,12 @@ function Rivals() {
 
   useTick((delta) => {
     updateRivals(delta);
+    const context = sound.context as WebAudioContext;
+    const analyser = context.analyser;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    setDataArray(dataArray);
   });
 
   const drawZone = useCallback(
@@ -87,17 +107,44 @@ function Rivals() {
       if (!rival.zone) return;
       g.clear();
       g.lineStyle(1, 0xff0000, 1);
-      g.drawRect(
-        rival.zone.x,
-        rival.zone.y,
-        rival.zone.width,
-        rival.zone.height,
-      );
-    },
-    [],
-  );
+      const rect = new Circle(rival.zone.x, rival.zone.y, rival.zone.radius);
 
+      // draw a perimeter on the rect with 100 points and perturb the points by the frequency data
+      const center = new Point(rect.x, rect.y);
+      const points: Point[] = [];
+      for (let i = 0; i < 100; i++) {
+        const angle = (i / 100) * Math.PI * 2;
+
+        let x = center.x + Math.cos(angle) * rect.radius;
+        let y = center.y + Math.sin(angle) * rect.radius;
+        x +=
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
+          200;
+        y +=
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
+          200;
+        points.push(new Point(x, y));
+      }
+
+      g.drawPolygon(points);
+    },
+    [dataArray],
+  );
   if (frames.length === 0) return null;
+
+  const text = "Party Zone";
+
+  const style = new TextStyle({
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
+  });
+  const metrics = TextMetrics.measureText(text, style);
 
   return (
     <>
@@ -130,7 +177,12 @@ function Rivals() {
           />
           <Graphics draw={(graphics) => drawZone(graphics, rival)} />
           {rival.zone && (
-            <Text x={rival.zone.x} y={rival.zone.y} text="Party Zone" />
+            <Text
+              x={rival.zone.x - metrics.width / 2}
+              y={rival.zone.y - metrics.height / 2}
+              text="Party Zone"
+              style={style}
+            />
           )}
         </Fragment>
       ))}

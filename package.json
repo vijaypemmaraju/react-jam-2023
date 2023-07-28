@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@pixi/filter-shockwave": "^5.1.1",
     "@pixi/particle-emitter": "^5.0.8",
     "@pixi/react": "^7.1.0",
     "@pixi/sound": "^5.2.0",

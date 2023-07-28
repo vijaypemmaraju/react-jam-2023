@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect } from "react";
 import { Graphics, Text } from "@pixi/react";
-import { Graphics as PixiGraphics, TextStyle } from "pixi.js";
+import { Graphics as PixiGraphics, TextMetrics, TextStyle } from "pixi.js";
 import useStore from "./useStore";
 
 export interface RectangleProps {
@@ -25,7 +25,7 @@ const Minimap: FC<RectangleProps> = (props) => {
       g.drawRect(props.x, props.y, props.width, props.height);
       g.endFill();
     },
-    [props]
+    [props],
   );
 
   const drawEntities = useCallback(
@@ -62,7 +62,7 @@ const Minimap: FC<RectangleProps> = (props) => {
       g.drawRect(x, y, 4, 4);
       g.endFill();
     },
-    [props, birds, rivals, player, viewport]
+    [props, birds, rivals, player, viewport],
   );
 
   const drawZones = useCallback(
@@ -73,11 +73,10 @@ const Minimap: FC<RectangleProps> = (props) => {
         const y = (player.zone.y / viewport!.height) * props.height + props.y;
         g.beginFill("0x0000FA");
         g.alpha = 0.3;
-        g.drawRect(
+        g.drawCircle(
           x,
           y,
-          (player.zone.width / viewport!.width) * props.width,
-          (player.zone.height / viewport!.height) * props.height
+          (player.zone.radius / viewport!.width) * props.width * 0.5,
         );
         g.endFill();
       }
@@ -88,17 +87,16 @@ const Minimap: FC<RectangleProps> = (props) => {
           const y = (rival.zone.y / viewport!.height) * props.height + props.y;
           g.beginFill("0xFA0000");
           g.alpha = 0.3;
-          g.drawRect(
+          g.drawCircle(
             x,
             y,
-            (rival.zone.width / viewport!.width) * props.width,
-            (rival.zone.height / viewport!.height) * props.height
+            (rival.zone.radius / viewport!.width) * props.width * 0.5,
           );
           g.endFill();
         }
       }
     },
-    [props, player, viewport, rivals]
+    [props, player, viewport, rivals],
   );
 
   const [showZones, setShowZones] = React.useState(false);
@@ -110,6 +108,18 @@ const Minimap: FC<RectangleProps> = (props) => {
     }, 2500);
   }, [mode]);
 
+  const text = "🎉";
+
+  const style = new TextStyle({
+    align: "center",
+    fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+    fontSize:
+      (((player.zone?.radius || 0) / viewport!.width) * props.width) / 2,
+    fontWeight: "400",
+  });
+
+  const metrics = TextMetrics.measureText(text, style);
+
   return (
     <>
       <Graphics draw={drawBackground} />
@@ -119,13 +129,13 @@ const Minimap: FC<RectangleProps> = (props) => {
         <Text
           x={
             (player.zone.x / viewport!.width) * props.width +
-            props.x +
-            (player.zone.width / viewport!.width) * props.width * 0.25
+            props.x -
+            metrics.width / 2
           }
           y={
             (player.zone.y / viewport!.height) * props.height +
-            props.y +
-            (player.zone.height / viewport!.height) * props.height * 0.0125
+            props.y -
+            metrics.height / 2
           }
           text="🎉"
           style={
@@ -133,40 +143,41 @@ const Minimap: FC<RectangleProps> = (props) => {
               align: "center",
               fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
               fontSize:
-                ((player.zone.width / viewport!.width) * props.width) / 2,
+                ((player.zone.radius / viewport!.width) * props.width) / 2,
               fontWeight: "400",
             })
           }
         />
       )}
-      {showZones && rivals.map((rival, i) => {
-        if (!rival.zone) return null;
-        return (
-          <Text
-            key={i}
-            x={
-              (rival.zone.x / viewport!.width) * props.width +
-              props.x +
-              (rival.zone.width / viewport!.width) * props.width * 0.25
-            }
-            y={
-              (rival.zone.y / viewport!.height) * props.height +
-              props.y +
-              (rival.zone.height / viewport!.height) * props.height * 0.0125
-            }
-            text="🎉"
-            style={
-              new TextStyle({
-                align: "center",
-                fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
-                fontSize:
-                  ((rival.zone.width / viewport!.width) * props.width) / 2,
-                fontWeight: "400",
-              })
-            }
-          />
-        );
-      })}
+      {showZones &&
+        rivals.map((rival, i) => {
+          if (!rival.zone) return null;
+          return (
+            <Text
+              key={i}
+              x={
+                (rival.zone.x / viewport!.width) * props.width +
+                props.x -
+                metrics.width / 2
+              }
+              y={
+                (rival.zone.y / viewport!.height) * props.height +
+                props.y -
+                metrics.height / 2
+              }
+              text="🎉"
+              style={
+                new TextStyle({
+                  align: "center",
+                  fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+                  fontSize:
+                    ((rival.zone.radius / viewport!.width) * props.width) / 2,
+                  fontWeight: "400",
+                })
+              }
+            />
+          );
+        })}
     </>
   );
 };

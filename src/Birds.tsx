@@ -29,10 +29,13 @@ function Birds() {
   }, []);
 
   useEffect(() => {
-    if (birds.length > 0 && birds.filter(bird => bird.acquiredBy === null).length === 0) {
-      setMode('end');
+    if (
+      birds.length > 0 &&
+      birds.filter((bird) => bird.acquiredBy === null).length === 0
+    ) {
+      setMode("end");
     }
-  }, [birds, setMode])
+  }, [birds, setMode]);
 
   useEffect(() => {
     setBirds((birds) => {
@@ -65,8 +68,9 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
           timeUntilNextFlapSound: 0,
           acquiredBy: null,
         });

@@ -1,6 +1,14 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { AnimatedSprite, useTick, useApp, Graphics, Text } from "@pixi/react";
-import { Graphics as PixiGraphics, Point, Rectangle, Sprite as PixiSprite, Texture } from "pixi.js";
+import {
+  TextStyle,
+  Graphics as PixiGraphics,
+  Point,
+  Sprite as PixiSprite,
+  TextMetrics,
+  Texture,
+  Circle,
+} from "pixi.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
@@ -9,6 +17,7 @@ import useStore from "./useStore";
 
 import { Assets } from "pixi.js";
 import { filters, sound } from "@pixi/sound";
+import { WebAudioContext } from "@pixi/sound/lib/webaudio";
 
 function Player() {
   const player = useStore((state) => state.player);
@@ -17,6 +26,7 @@ function Player() {
   const app = useApp();
 
   const viewport = useStore((state) => state.viewport);
+  const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array(0));
 
   const [frames, setFrames] = useState<Texture[]>([]);
 
@@ -43,11 +53,10 @@ function Player() {
     });
     setPlayer((player) => {
       // find a random rectangle within the world of 0, 0, to 3072, 3072
-      player.zone = new Rectangle(
-        Math.random() * (1536) + (1536 - 512),
-        Math.random() * (1536) + (1536 - 512),
-        512,
-        512,
+      player.zone = new Circle(
+        Math.random() * 1536 + (1536 - 512),
+        Math.random() * 1536 + (1536 - 512),
+        256,
       );
     });
   }, [setPlayer]);
@@ -66,25 +75,58 @@ function Player() {
       player.destination = { x, y };
     });
     updatePlayer(delta);
+    const context = sound.context as WebAudioContext;
+    const analyser = context.analyser;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    setDataArray(dataArray);
   });
-
 
   const drawZone = useCallback(
     (g: PixiGraphics) => {
       if (!player.zone) return;
       g.clear();
       g.lineStyle(1, 0x0000ff, 1);
-      g.drawRect(
-        player.zone.x,
-        player.zone.y,
-        player.zone.width,
-        player.zone.height,
-      );
+      const rect = new Circle(player.zone.x, player.zone.y, player.zone.radius);
+
+      // draw a perimeter on the rect with 100 points and perturb the points by the frequency data
+      const center = new Point(rect.x, rect.y);
+      const points: Point[] = [];
+      for (let i = 0; i < 100; i++) {
+        const angle = (i / 100) * Math.PI * 2;
+
+        let x = center.x + Math.cos(angle) * rect.radius;
+        let y = center.y + Math.sin(angle) * rect.radius;
+        x +=
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
+          200;
+        y +=
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
+          200;
+        points.push(new Point(x, y));
+      }
+
+      g.drawPolygon(points);
     },
-    [player.zone],
+    [dataArray, player.zone],
   );
 
   if (frames.length === 0) return null;
+
+  const text = "Party Zone";
+
+  const style = new TextStyle({
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
+  });
+  const metrics = TextMetrics.measureText(text, style);
 
   return (
     <>
@@ -116,7 +158,12 @@ function Player() {
       />
       <Graphics draw={drawZone} />
       {player.zone && (
-        <Text x={player.zone.x} y={player.zone.y} text="Party Zone" />
+        <Text
+          x={player.zone.x - metrics.width / 2}
+          y={player.zone.y - metrics.height / 2}
+          text="Party Zone"
+          style={style}
+        />
       )}
     </>
   );
