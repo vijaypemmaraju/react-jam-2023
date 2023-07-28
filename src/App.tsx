@@ -9,6 +9,8 @@ import Player from "./Player";
 import { sound } from "@pixi/sound";
 import Rivals from "./Rivals";
 
+let isPlaying = false;
+
 function App() {
   const app = useApp();
 
@@ -33,19 +35,22 @@ function App() {
         loop: true,
         volume: 0.1,
       });
-      sound.play("song_upper", {
-        loop: true,
-        volume: 0.1,
-      });
-      sound.play("song_lower", {
-        loop: true,
-        volume: 0.1,
-      });
     }
   }, [mode]);
 
   useTick((_delta, ticker) => {
     if (mode === "play") {
+      if (!isPlaying) {
+        sound.play("song_lower", {
+          loop: true,
+          volume: 0.1,
+        });
+        sound.play("song_upper", {
+          loop: true,
+          volume: 0.1,
+        });
+        isPlaying = true;
+      }
       ticker.speed = 1;
       sound.resumeAll();
     } else {
