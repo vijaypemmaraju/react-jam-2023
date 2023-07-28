@@ -9,16 +9,18 @@ const Score: FC = () => {
   return (
     <>
       <Text
-        text={`Birds acquired by player: ${birds.filter((bird) => bird.acquiredBy === "player").length
-          }`}
-        style={new TextStyle({ fill: 0xffffff })}
+        text={`Player: ${
+          birds.filter((bird) => bird.acquiredBy === "player").length
+        }`}
+        style={new TextStyle({ fill: 0x0000ff })}
         x={50}
         y={50}
       />
       <Text
-        text={`Birds acquired by rival: ${birds.filter((bird) => bird.acquiredBy === "rival").length
-          }`}
-        style={new TextStyle({ fill: 0xffffff })}
+        text={`Rival: ${
+          birds.filter((bird) => bird.acquiredBy === "rival").length
+        }`}
+        style={new TextStyle({ fill: 0xff0000 })}
         x={50}
         y={100}
       />

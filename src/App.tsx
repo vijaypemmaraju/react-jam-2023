@@ -1,5 +1,5 @@
-import { Sprite, useApp, useTick } from "@pixi/react";
-import { BlurFilter } from "pixi.js";
+import { Sprite, Text, useApp, useTick } from "@pixi/react";
+import { BlurFilter, TextStyle } from "pixi.js";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Birds from "./Birds";
@@ -38,6 +38,9 @@ function App() {
     }
   }, [mode]);
 
+  const [difference, setDifference] = useState(0);
+  const player = useStore((state) => state.player);
+
   useTick((_delta, ticker) => {
     if (mode === "play") {
       if (!isPlaying) {
@@ -51,14 +54,26 @@ function App() {
         });
         isPlaying = true;
       }
-      const upper = sound.find('song_upper');
-      if (upper) {
-        sound.stop("song_lower");
-        sound.play("song_lower", {
-          loop: true,
-          volume: 0.1,
-          start: upper.instances[0].progress,
-        });
+      const upper = sound.find("song_upper");
+      const lower = sound.find("song_lower");
+      if (upper && lower) {
+        setDifference(
+          upper.instances[0].progress - lower.instances[0].progress,
+        );
+        const zone = player.zone;
+        if (zone) {
+          const distanceFromZone = Math.sqrt(
+            Math.pow(zone.x - player.position.x, 2) +
+              Math.pow(zone.y - player.position.y, 2),
+          );
+          const maxDistance = 700;
+          lower.volume = Math.max(
+            0,
+            1 - Math.min(distanceFromZone / maxDistance, 1),
+          );
+        } else {
+          lower.volume = 0;
+        }
       }
       ticker.speed = 1;
       sound.resumeAll();

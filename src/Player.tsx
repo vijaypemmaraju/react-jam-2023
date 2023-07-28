@@ -101,13 +101,17 @@ function Player() {
         let y = center.y + Math.sin(angle) * rect.radius;
         x +=
           (dataArray[
-            Math.floor((i + 5 * dataArray.length / 6) % (dataArray.length / 2))
+            Math.floor(
+              (i + (5 * dataArray.length) / 6) % (dataArray.length / 2),
+            )
           ] /
             255) *
           200;
         y +=
           (dataArray[
-            Math.floor((i + 5 * dataArray.length / 6) % (dataArray.length / 2))
+            Math.floor(
+              (i + (5 * dataArray.length) / 6) % (dataArray.length / 2),
+            )
           ] /
             255) *
           200;
@@ -124,8 +128,9 @@ function Player() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
-      })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
+      (dataArray[20] || 0) % 255
+    })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 

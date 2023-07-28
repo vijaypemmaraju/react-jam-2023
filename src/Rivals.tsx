@@ -46,7 +46,7 @@ function Rivals() {
           !zone ||
           Math.sqrt(
             Math.pow(zone.x - player.zone!.x, 2) +
-            Math.pow(zone.y - player.zone!.y, 2),
+              Math.pow(zone.y - player.zone!.y, 2),
           ) < 512
         ) {
           zone = new Circle(
@@ -83,8 +83,9 @@ function Rivals() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
           timeUntilNextFlapSound: 0,
           zone,
         });
@@ -135,8 +136,9 @@ function Rivals() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
-      })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
+      (dataArray[20] || 0) % 255
+    })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 
