@@ -175,7 +175,7 @@ export const Root = () => {
                     <span>l</span>
                   </span>
                   {' '}
-                  (<img src="./public/rival.png" className="inline-block w-6 rocking" />)
+                  (<img src="./rival.png" className="inline-block w-6 rocking" />)
                 </li>
               </ol>
             </div>
