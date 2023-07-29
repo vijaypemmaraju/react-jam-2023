@@ -112,7 +112,7 @@ const useStore = create<Store>((set, get) => ({
       })
     ),
   updatePlayer: (delta: number) => {
-    const { player, setPlayer, WEIGHTS } = get();
+    const { player, setPlayer, WEIGHTS, audioDataArray } = get();
 
     const { position, destination, lastVelocity } = player;
     const newVelocity = {
@@ -206,6 +206,11 @@ const useStore = create<Store>((set, get) => ({
       player.lastRotation = rotation;
       player.acceleration = length;
     });
+
+    player.zone!.x +=
+      (Math.random() - 0.5) * ((audioDataArray[0] || 0) / 2048) * delta * 25;
+    player.zone!.y +=
+      (Math.random() - 0.5) * ((audioDataArray[0] || 0) / 2048) * delta * 25;
   },
   updateBirds: (delta: number) => {
     const { player, rivals, setBirds, WEIGHTS, audioDataArray } = get();
@@ -503,7 +508,7 @@ const useStore = create<Store>((set, get) => ({
     });
   },
   updateRivals: (delta: number) => {
-    const { player, birds, setRivals, WEIGHTS } = get();
+    const { player, birds, setRivals, WEIGHTS, audioDataArray } = get();
     setRivals((rivals) => {
       let cohesion, alignment, separation, distance;
       const center = { x: 0, y: 0 };
@@ -707,6 +712,16 @@ const useStore = create<Store>((set, get) => ({
         rival.emitter!.spawnChance =
           Math.max((cappedLength - 5000000) / 5000000, 0) +
           Math.min(rival.torque * 0.1, 0.01);
+        rival.zone!.x +=
+          (Math.random() - 0.5) *
+          ((audioDataArray[0] || 0) / 2048) *
+          delta *
+          25;
+        rival.zone!.y +=
+          (Math.random() - 0.5) *
+          ((audioDataArray[0] || 0) / 2048) *
+          delta *
+          25;
       }
     });
   },
