@@ -140,14 +140,14 @@ export const Root = () => {
               <ol>
                 <li className="mt-2">
                   1. You are{" "}
-                  <img src="./public/jay.png" className="inline-block w-6 rocking" />
+                  <img src="./jay.png" className="inline-block w-6 rocking" />
                 </li>
                 <li className="mt-2">
                   2. Use{" "}
-                  <img src="./public/cursor.png" className="inline-block w-6 rocking" />{" "}
+                  <img src="./cursor.png" className="inline-block w-6 rocking" />{" "}
                   to guide{" "}
                   <img
-                    src="./public/female_jay.png"
+                    src="./female_jay.png"
                     className="inline-block w-6 rocking"
                   />{" "}
                   to{" "}
@@ -164,7 +164,7 @@ export const Root = () => {
                 <li className="mt-2">
                   3. Get more{" "}
                   <img
-                    src="./public/female_jay.png"
+                    src="./female_jay.png"
                     className="inline-block w-6 rocking"
                   />{" "}
                   than your <span className="text-red-600 logo is-animation">
