@@ -95,21 +95,21 @@ const useStore = create<Store>((set, get) => ({
     set(
       produce((draft) => {
         fn(draft.player);
-      }),
+      })
     ),
   birds: [],
   setBirds: (fn) =>
     set(
       produce((draft) => {
         fn(draft.birds);
-      }),
+      })
     ),
   rivals: [],
   setRivals: (fn) =>
     set(
       produce((draft) => {
         fn(draft.rivals);
-      }),
+      })
     ),
   updatePlayer: (delta: number) => {
     const { player, setPlayer, WEIGHTS } = get();
@@ -120,7 +120,7 @@ const useStore = create<Store>((set, get) => ({
       y: destination.y - position.y,
     };
     const length = Math.sqrt(
-      Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2),
+      Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
     const fanLoop = sound.find("fan_loop");
     if (fanLoop) {
@@ -137,7 +137,7 @@ const useStore = create<Store>((set, get) => ({
       y: lastVelocity.y * 0.97 + newVelocity.y * 0.03,
     };
     const velocityMagnitude = Math.sqrt(
-      Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2),
+      Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
     );
 
     if (velocityMagnitude < 0.02) {
@@ -169,7 +169,7 @@ const useStore = create<Store>((set, get) => ({
     player.emitter!.spawnChance =
       Math.max(
         (length - WEIGHTS.HIGH_SPEED_THRESHOLD) / WEIGHTS.HIGH_SPEED_THRESHOLD,
-        0,
+        0
       ) +
       Math.min(player.torque, 0.0) * 2;
 
@@ -227,7 +227,7 @@ const useStore = create<Store>((set, get) => ({
             const suitor = suitors[j];
             const distance = Math.sqrt(
               Math.pow(suitor.position.x - birds[i].position.x, 2) +
-                Math.pow(suitor.position.y - birds[i].position.y, 2),
+                Math.pow(suitor.position.y - birds[i].position.y, 2)
             );
 
             if (distance < closestDistance) {
@@ -255,7 +255,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const playerAttractionLength = Math.sqrt(
-          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2),
+          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
 
         const isCloseToPlayer =
@@ -292,7 +292,7 @@ const useStore = create<Store>((set, get) => ({
           if (i !== j) {
             distance = Math.sqrt(
               Math.pow(birds[j].position.x - position.x, 2) +
-                Math.pow(birds[j].position.y - position.y, 2),
+                Math.pow(birds[j].position.y - position.y, 2)
             );
             if (distance < WEIGHTS.FORCE_RADIUS) {
               cohesion.x += birds[j].position.x;
@@ -349,7 +349,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const length = Math.sqrt(
-          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2),
+          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
         );
         const cappedLength = Math.min(length, 500000);
         if (length < 0.01) {
@@ -365,16 +365,16 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const velocityLength = Math.sqrt(
-          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2),
+          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
         velocity.x *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 5) / 2
+          ? Math.pow(audioDataArray[0] / 255, 5) / 2.5
           : 0.2;
         velocity.y *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 5) / 2
+          ? Math.pow(audioDataArray[0] / 255, 5) / 2.5
           : 0.2;
 
         const rotation = Math.atan2(velocity.y, velocity.x);
@@ -434,7 +434,7 @@ const useStore = create<Store>((set, get) => ({
         const volumeRelativeToPlayer = Math.max(
           0,
           (0.01 + Math.random() * 0.01) *
-            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS),
+            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
 
         const fanLoop = sound.find(`fan_loop_${bird.id}`);
@@ -450,7 +450,7 @@ const useStore = create<Store>((set, get) => ({
             {
               volume: volumeRelativeToPlayer,
               speed: 3 + Math.random() * 0.5 - 0.25,
-            },
+            }
           );
           bird.timeUntilNextFlapSound = Math.random() * 60 + 25;
         }
@@ -505,8 +505,8 @@ const useStore = create<Store>((set, get) => ({
           (bird) =>
             Math.sqrt(
               Math.pow(bird.position.x - position.x, 2) +
-                Math.pow(bird.position.y - position.y, 2),
-            ) < 200,
+                Math.pow(bird.position.y - position.y, 2)
+            ) < 200
         ).length;
 
         if (
@@ -528,7 +528,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const playerAttractionLength = Math.sqrt(
-          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2),
+          Math.pow(playerAttraction.x, 2) + Math.pow(playerAttraction.y, 2)
         );
 
         const pointAttraction = {
@@ -545,7 +545,7 @@ const useStore = create<Store>((set, get) => ({
           if (i !== j) {
             distance = Math.sqrt(
               Math.pow(birds[j].position.x - position.x, 2) +
-                Math.pow(birds[j].position.y - position.y, 2),
+                Math.pow(birds[j].position.y - position.y, 2)
             );
             if (distance < WEIGHTS.FORCE_RADIUS) {
               cohesion.x += birds[j].position.x;
@@ -579,7 +579,7 @@ const useStore = create<Store>((set, get) => ({
 
         const distanceFromPlayerZoneLength = Math.sqrt(
           Math.pow(distanceFromPlayerZone.x, 2) +
-            Math.pow(distanceFromPlayerZone.y, 2),
+            Math.pow(distanceFromPlayerZone.y, 2)
         );
 
         const newVelocity = {
@@ -606,7 +606,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const length = Math.sqrt(
-          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2),
+          Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
         );
         const cappedLength = Math.min(length, 500000);
         if (length < 0.01) {
@@ -622,7 +622,7 @@ const useStore = create<Store>((set, get) => ({
         };
 
         const velocityLength = Math.sqrt(
-          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2),
+          Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
         );
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
@@ -650,7 +650,7 @@ const useStore = create<Store>((set, get) => ({
         const volumeRelativeToPlayer = Math.max(
           0,
           (0.01 + Math.random() * 0.01) *
-            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS),
+            (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
 
         const fanLoop = sound.find(`fan_loop_${rival.id}`);
@@ -666,7 +666,7 @@ const useStore = create<Store>((set, get) => ({
             {
               volume: volumeRelativeToPlayer,
               speed: 3 + Math.random() * 0.5 - 0.25,
-            },
+            }
           );
           rival.timeUntilNextFlapSound = Math.random() * 60 + 25;
         }

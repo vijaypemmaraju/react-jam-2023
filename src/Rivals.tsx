@@ -46,7 +46,7 @@ function Rivals() {
           !zone ||
           Math.sqrt(
             Math.pow(zone.x - player.zone!.x, 2) +
-              Math.pow(zone.y - player.zone!.y, 2),
+            Math.pow(zone.y - player.zone!.y, 2),
           ) < 512
         ) {
           zone = new Circle(
@@ -83,9 +83,8 @@ function Rivals() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
-            255 - random * 100
-          })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+            })`,
           timeUntilNextFlapSound: 0,
           zone,
         });
@@ -102,6 +101,7 @@ function Rivals() {
       if (!rival.zone) return;
       g.clear();
       g.lineStyle(1, 0xff0000, 1);
+      g.beginFill(0xff0000, 0.1);
       const rect = new Circle(rival.zone.x, rival.zone.y, rival.zone.radius);
 
       // draw a perimeter on the rect with 100 points and perturb the points by the frequency data
@@ -109,25 +109,19 @@ function Rivals() {
       const points: Point[] = [];
       for (let i = 0; i < 100; i++) {
         const angle = (i / 100) * Math.PI * 2;
+        const perturbation = (dataArray[
+          Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+        ] /
+          255) *
+          200;
+        const x = center.x + Math.cos(angle) * (rect.radius + perturbation);
+        const y = center.y + Math.sin(angle) * (rect.radius + perturbation);
 
-        let x = center.x + Math.cos(angle) * rect.radius;
-        let y = center.y + Math.sin(angle) * rect.radius;
-        x +=
-          (dataArray[
-            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
-          ] /
-            255) *
-          200;
-        y +=
-          (dataArray[
-            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
-          ] /
-            255) *
-          200;
         points.push(new Point(x, y));
       }
 
       g.drawPolygon(points);
+      g.endFill();
     },
     [dataArray],
   );
@@ -136,9 +130,8 @@ function Rivals() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
-      (dataArray[20] || 0) % 255
-    })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 

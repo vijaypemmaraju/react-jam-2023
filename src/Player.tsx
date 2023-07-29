@@ -89,6 +89,7 @@ function Player() {
       if (!player.zone) return;
       g.clear();
       g.lineStyle(1, 0x0000ff, 1);
+      g.beginFill(0x0000ff, 0.1);
       const rect = new Circle(player.zone.x, player.zone.y, player.zone.radius);
 
       // draw a perimeter on the rect with 100 points and perturb the points by the frequency data
@@ -97,28 +98,19 @@ function Player() {
       for (let i = 0; i < 100; i++) {
         const angle = (i / 100) * Math.PI * 2;
 
-        let x = center.x + Math.cos(angle) * rect.radius;
-        let y = center.y + Math.sin(angle) * rect.radius;
-        x +=
-          (dataArray[
-            Math.floor(
-              (i + (5 * dataArray.length) / 6) % (dataArray.length / 2),
-            )
-          ] /
-            255) *
+        const perturbation = (dataArray[
+          Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+        ] /
+          255) *
           200;
-        y +=
-          (dataArray[
-            Math.floor(
-              (i + (5 * dataArray.length) / 6) % (dataArray.length / 2),
-            )
-          ] /
-            255) *
-          200;
+        const x = center.x + Math.cos(angle) * (rect.radius + perturbation);
+        const y = center.y + Math.sin(angle) * (rect.radius + perturbation);
+
         points.push(new Point(x, y));
       }
 
       g.drawPolygon(points);
+      g.endFill();
     },
     [dataArray, player.zone],
   );
@@ -128,9 +120,8 @@ function Player() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
-      (dataArray[20] || 0) % 255
-    })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 
