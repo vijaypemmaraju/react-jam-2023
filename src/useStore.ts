@@ -3,9 +3,10 @@ import { produce } from "immer";
 import { PLAYER_SPEED } from "./constants";
 import { Viewport as PixiViewport } from "pixi-viewport";
 import { Emitter } from "@pixi/particle-emitter";
-import { Circle, ColorSource } from "pixi.js";
+import { Circle, ColorSource, utils } from "pixi.js";
 import { sound } from "@pixi/sound";
 import { fanLoopFilters } from "./sounds";
+import lerp from "./utils/lerp";
 
 type GameObject = {
   id?: number;
@@ -385,20 +386,29 @@ const useStore = create<Store>((set, get) => ({
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        if (
+        const playerVelocityThresholdRatio =
           isActuallyCloseToPlayer &&
-          player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-        ) {
-        } else {
-          velocity.x *= bird.attractionPoint
-            ? Math.pow(audioDataArray[0] / 2048, 5) *
-              (isActuallyCloseToPlayer ? 8000 : 10000)
-            : 0.2;
-          velocity.y *= bird.attractionPoint
-            ? Math.pow(audioDataArray[0] / 2048, 5) *
-              (isActuallyCloseToPlayer ? 8000 : 10000)
-            : 0.2;
-        }
+          player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD * 0.5
+            ? player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD
+            : 0;
+
+        velocity.x *= bird.attractionPoint
+          ? lerp(
+              Math.pow(audioDataArray[0] / 2048, 5) *
+                (isActuallyCloseToPlayer ? 8000 : 10000),
+              1,
+              Math.min(Math.max(playerVelocityThresholdRatio, 0), 1)
+            )
+          : 0.2;
+
+        velocity.y *= bird.attractionPoint
+          ? lerp(
+              Math.pow(audioDataArray[0] / 2048, 5) *
+                (isActuallyCloseToPlayer ? 8000 : 10000),
+              1,
+              Math.min(Math.max(playerVelocityThresholdRatio, 0), 1)
+            )
+          : 0.2;
 
         const rotation = Math.atan2(velocity.y, velocity.x);
 
@@ -427,9 +437,11 @@ const useStore = create<Store>((set, get) => ({
 
         let inAZone = false;
 
+        const alias = ["chirp", "chirp2"][Math.floor(Math.random() * 2)];
+
         if (player.zone?.contains(bird.position.x, bird.position.y)) {
           if (!bird.attractionPoint) {
-            sound.play("chirp", {
+            sound.play(alias, {
               volume: 0.02 + Math.random() * 0.02,
               speed: 1.0 + Math.random() * 0.2 - 0.1,
             });
@@ -447,7 +459,7 @@ const useStore = create<Store>((set, get) => ({
           const rival = rivals[j];
           if (rival.zone?.contains(bird.position.x, bird.position.y)) {
             if (!bird.attractionPoint) {
-              sound.play("chirp", {
+              sound.play(alias, {
                 volume: 0.02 + Math.random() * 0.02,
                 speed: 0.9 + Math.random() * 0.2 - 0.1,
               });
@@ -463,7 +475,7 @@ const useStore = create<Store>((set, get) => ({
 
         if (!inAZone) {
           if (bird.attractionPoint) {
-            sound.play("chirp", {
+            sound.play(alias, {
               volume: 0.05 + Math.random() * 0.05,
               speed: 0.5 + Math.random() * 0.2 - 0.1,
             });

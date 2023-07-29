@@ -8,6 +8,7 @@ sound.add("fan_loop", "sounds/fan_loop.mp3");
 sound.add("song_upper", "sounds/jaybae_upper.flac");
 sound.add("song_lower", "sounds/jaybae_lower.flac");
 sound.add("chirp", "sounds/chirp.wav");
+sound.add("chirp2", "sounds/chirp2.wav");
 
 export const fanLoopFilters = [
   new filters.TelephoneFilter(),

@@ -33,7 +33,7 @@ function App() {
       }, 1000);
       sound.play("ambient", {
         loop: true,
-        volume: 0.1,
+        volume: 0.05,
       });
     }
   }, [mode]);

@@ -84,7 +84,7 @@ export const Root = () => {
             }}
           >
             <motion.div
-              className="text-4xl text-white"
+              className="text-white text-9xl logo is-animation"
               initial={{
                 opacity: 0,
                 position: "relative",
@@ -97,7 +97,11 @@ export const Root = () => {
                 top: mode === "main" ? 0 : -100,
               }}
             >
-              Jay Bae
+              <span>F</span>
+              <span>l</span>
+              <span>o</span>
+              <span>c</span>
+              <span>k</span>
             </motion.div>
             <motion.button
               className="mt-8 btn btn-primary"
@@ -211,7 +215,7 @@ export const Root = () => {
               }}
             >
               {birds.filter((bird) => bird.acquiredBy === "player").length >
-              birds.filter((bird) => bird.acquiredBy === "rival").length
+                birds.filter((bird) => bird.acquiredBy === "rival").length
                 ? "You won!"
                 : "You lost!"}
             </motion.div>
