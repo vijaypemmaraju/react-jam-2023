@@ -263,6 +263,10 @@ const useStore = create<Store>((set, get) => ({
           !bird.attractionPoint &&
           playerAttractionLength < WEIGHTS.ATTRACTION_RADIUS;
 
+        const isActuallyCloseToPlayer =
+          closestSuitor === player &&
+          playerAttractionLength < WEIGHTS.ATTRACTION_RADIUS / 2;
+
         if (
           bird.attractionPoint ||
           (closestSuitor === player && !isCloseToPlayer)
@@ -323,27 +327,33 @@ const useStore = create<Store>((set, get) => ({
           x:
             closestSuitorAttraction.x *
               (closestSuitor === player &&
-              isCloseToPlayer &&
+              isActuallyCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 10
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
             (bird.attractionPoint ? 1000000 : 1) * pointAttraction.x +
             WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
-            cohesion.x * (bird.attractionPoint ? 1000 : 1) * WEIGHTS.COHESION +
+            cohesion.x *
+              (bird.attractionPoint ? 4000 : 1) *
+              WEIGHTS.COHESION *
+              (isActuallyCloseToPlayer && bird.attractionPoint ? 100 : 1) +
             alignment.x * WEIGHTS.ALIGNMENT +
             separation.x * WEIGHTS.SEPARATION,
           y:
             closestSuitorAttraction.y *
               (closestSuitor === player &&
-              isCloseToPlayer &&
+              isActuallyCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
                 ? 100
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
             (bird.attractionPoint ? 1000000 : 1) * pointAttraction.y +
             WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
-            cohesion.y * (bird.attractionPoint ? 1000 : 1) * WEIGHTS.COHESION +
+            cohesion.y *
+              (bird.attractionPoint ? 4000 : 1) *
+              WEIGHTS.COHESION *
+              (isActuallyCloseToPlayer && bird.attractionPoint ? 100 : 1) +
             alignment.y * WEIGHTS.ALIGNMENT +
             separation.y * WEIGHTS.SEPARATION,
         };
@@ -370,12 +380,20 @@ const useStore = create<Store>((set, get) => ({
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        velocity.x *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 5) / 2.5
-          : 0.2;
-        velocity.y *= bird.attractionPoint
-          ? Math.pow(audioDataArray[0] / 255, 5) / 2.5
-          : 0.2;
+        if (
+          isActuallyCloseToPlayer &&
+          player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
+        ) {
+        } else {
+          velocity.x *= bird.attractionPoint
+            ? Math.pow(audioDataArray[0] / 2048, 5) *
+              (isActuallyCloseToPlayer ? 8000 : 10000)
+            : 0.2;
+          velocity.y *= bird.attractionPoint
+            ? Math.pow(audioDataArray[0] / 2048, 5) *
+              (isActuallyCloseToPlayer ? 8000 : 10000)
+            : 0.2;
+        }
 
         const rotation = Math.atan2(velocity.y, velocity.x);
 
@@ -402,12 +420,15 @@ const useStore = create<Store>((set, get) => ({
                 0.5),
         };
 
+        let inAZone = false;
+
         if (player.zone?.contains(bird.position.x, bird.position.y)) {
           bird.attractionPoint = {
             x: player.zone.x,
             y: player.zone.y,
           };
           bird.acquiredBy = "player";
+          inAZone = true;
         }
 
         for (let j = 0; j < rivals.length; j++) {
@@ -418,7 +439,13 @@ const useStore = create<Store>((set, get) => ({
               y: rival.zone.y,
             };
             bird.acquiredBy = "rival";
+            inAZone = true;
           }
+        }
+
+        if (!inAZone) {
+          bird.attractionPoint = undefined;
+          bird.acquiredBy = null;
         }
 
         bird.velocity = velocity;
