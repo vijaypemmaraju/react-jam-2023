@@ -122,7 +122,7 @@ export const Root = () => {
                   Assets.load("female_jay_sheet.json"),
                   Assets.load("rival_sheet.json"),
                   Assets.load(
-                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png",
+                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png"
                   ),
                 ]).then(() => {
                   useStore.getState().setMode("play");
@@ -138,9 +138,45 @@ export const Root = () => {
             <div className="mt-8 font-serif text-xl text-white">
               <div className="text-center">Instructions</div>
               <ol>
-                <li className="mt-2">1. You are <img src="./public/jay.png" className="inline-block w-6" /></li>
-                <li className="mt-2">2. Use 🖱️ to guide <img src="./public/female_jay.png" className="inline-block w-6" /> to <span className="text-blue-600">parties</span></li>
-                <li className="mt-2">3. Get more <img src="./public/female_jay.png" className="inline-block w-6" /> than your rival <img src="./public/rival.png" className="inline-block w-6" /></li>
+                <li className="mt-2">
+                  1. You are{" "}
+                  <img src="./public/jay.png" className="inline-block w-6 rocking" />
+                </li>
+                <li className="mt-2">
+                  2. Use{" "}
+                  <img src="./public/cursor.png" className="inline-block w-6 rocking" />{" "}
+                  to guide{" "}
+                  <img
+                    src="./public/female_jay.png"
+                    className="inline-block w-6 rocking"
+                  />{" "}
+                  to{" "}
+                  <span className="text-blue-600 logo is-animation">
+                    <span>P</span>
+                    <span>a</span>
+                    <span>r</span>
+                    <span>t</span>
+                    <span>i</span>
+                    <span>e</span>
+                    <span>s</span>
+                  </span>
+                </li>
+                <li className="mt-2">
+                  3. Get more{" "}
+                  <img
+                    src="./public/female_jay.png"
+                    className="inline-block w-6 rocking"
+                  />{" "}
+                  than your <span className="text-red-600 logo is-animation">
+                    <span>R</span>
+                    <span>i</span>
+                    <span>v</span>
+                    <span>a</span>
+                    <span>l</span>
+                  </span>
+                  {' '}
+                  (<img src="./public/rival.png" className="inline-block w-6 rocking" />)
+                </li>
               </ol>
             </div>
           </motion.div>

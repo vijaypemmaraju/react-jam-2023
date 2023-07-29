@@ -36,6 +36,24 @@
   animation-delay: 0.4s;
 }
 
+.rocking {
+  animation: rocking 1s ease-in-out infinite;
+}
+
+@keyframes rocking {
+  0% {
+    transform: rotate(-5deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+
+  100% {
+    transform: rotate(-5deg);
+  }
+}
+
 @keyframes wave-text {
   0% {
     transform: translateY(0em);
