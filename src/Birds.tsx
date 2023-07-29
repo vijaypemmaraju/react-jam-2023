@@ -39,14 +39,8 @@ function Birds() {
 
   useEffect(() => {
     setBirds((birds) => {
-      for (let i = 0; i < 25; i++) {
+      for (let i = 0; i < 50; i++) {
         const random = Math.random();
-        sound.add(`fan_loop_${i}`, "sounds/fan_loop.ogg");
-        sound.play(`fan_loop_${i}`, {
-          loop: true,
-          filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
-          volume: 0.1,
-        });
         birds.push({
           id: i,
           position: {
@@ -68,9 +62,8 @@ function Birds() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
-            255 - random * 100
-          })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+            })`,
           timeUntilNextFlapSound: 0,
           acquiredBy: null,
         });

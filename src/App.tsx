@@ -64,7 +64,7 @@ function App() {
         if (zone) {
           const distanceFromZone = Math.sqrt(
             Math.pow(zone.x - player.position.x, 2) +
-              Math.pow(zone.y - player.position.y, 2),
+            Math.pow(zone.y - player.position.y, 2),
           );
           const maxDistance = 700;
           lower.volume = Math.max(

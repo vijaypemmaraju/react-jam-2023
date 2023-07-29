@@ -56,12 +56,6 @@ function Rivals() {
           );
         }
         const random = Math.random();
-        sound.add(`fan_loop_rival_${i}`, "sounds/fan_loop.ogg");
-        sound.play(`fan_loop_rival_${i}`, {
-          loop: true,
-          filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
-          volume: 0.1,
-        });
         rivals.push({
           id: i,
           position: {

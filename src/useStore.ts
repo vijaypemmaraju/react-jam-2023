@@ -437,13 +437,6 @@ const useStore = create<Store>((set, get) => ({
             (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
 
-        const fanLoop = sound.find(`fan_loop_${bird.id}`);
-        if (fanLoop) {
-          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
-          fanLoop.speed = length / 2000;
-          fanLoop.filters = fanLoopFilters;
-        }
-
         if (bird.timeUntilNextFlapSound <= 0) {
           sound.play(
             ["wing_flap", "wing_flap_2"][Math.floor(Math.random() * 2)],
@@ -652,13 +645,6 @@ const useStore = create<Store>((set, get) => ({
           (0.01 + Math.random() * 0.01) *
             (1 - playerAttractionLength / WEIGHTS.ATTRACTION_RADIUS)
         );
-
-        const fanLoop = sound.find(`fan_loop_${rival.id}`);
-        if (fanLoop) {
-          fanLoop.volume = Math.pow(volumeRelativeToPlayer, 2) * 1000;
-          fanLoop.speed = length / 2000;
-          fanLoop.filters = fanLoopFilters;
-        }
 
         if (rival.timeUntilNextFlapSound <= 0) {
           sound.play(
