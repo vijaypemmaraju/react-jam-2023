@@ -428,17 +428,30 @@ const useStore = create<Store>((set, get) => ({
         let inAZone = false;
 
         if (player.zone?.contains(bird.position.x, bird.position.y)) {
+          if (!bird.attractionPoint) {
+            sound.play("chirp", {
+              volume: 0.02 + Math.random() * 0.02,
+              speed: 1.0 + Math.random() * 0.2 - 0.1,
+            });
+          }
           bird.attractionPoint = {
             x: player.zone.x,
             y: player.zone.y,
           };
           bird.acquiredBy = "player";
+
           inAZone = true;
         }
 
         for (let j = 0; j < rivals.length; j++) {
           const rival = rivals[j];
           if (rival.zone?.contains(bird.position.x, bird.position.y)) {
+            if (!bird.attractionPoint) {
+              sound.play("chirp", {
+                volume: 0.02 + Math.random() * 0.02,
+                speed: 0.9 + Math.random() * 0.2 - 0.1,
+              });
+            }
             bird.attractionPoint = {
               x: rival.zone.x,
               y: rival.zone.y,
@@ -449,6 +462,12 @@ const useStore = create<Store>((set, get) => ({
         }
 
         if (!inAZone) {
+          if (bird.attractionPoint) {
+            sound.play("chirp", {
+              volume: 0.05 + Math.random() * 0.05,
+              speed: 0.5 + Math.random() * 0.2 - 0.1,
+            });
+          }
           bird.attractionPoint = undefined;
           bird.acquiredBy = null;
         }
