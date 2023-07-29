@@ -135,6 +135,14 @@ export const Root = () => {
                 <span className="loading loading-spinner loading-xs"></span>
               )}
             </motion.button>
+            <div className="mt-8 font-serif text-xl text-white">
+              <div className="text-center">Instructions</div>
+              <ol>
+                <li className="mt-2">1. You are <img src="./public/jay.png" className="inline-block w-6" /></li>
+                <li className="mt-2">2. Use 🖱️ to guide <img src="./public/female_jay.png" className="inline-block w-6" /> to <span className="text-blue-600">parties</span></li>
+                <li className="mt-2">3. Get more <img src="./public/female_jay.png" className="inline-block w-6" /> than your rival <img src="./public/rival.png" className="inline-block w-6" /></li>
+              </ol>
+            </div>
           </motion.div>
           <motion.div
             className="flex flex-col items-center justify-center"
