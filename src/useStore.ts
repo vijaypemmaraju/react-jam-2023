@@ -123,19 +123,13 @@ const useStore = create<Store>((set, get) => ({
     const length = Math.sqrt(
       Math.pow(newVelocity.x, 2) + Math.pow(newVelocity.y, 2)
     );
-    const fanLoop = sound.find("fan_loop");
-    if (fanLoop) {
-      fanLoop.volume = 0.1 + (length / 500) * 0.2;
-      fanLoop.speed = length / 1000;
-      fanLoop.filters = fanLoopFilters;
-    }
 
     newVelocity.x /= length;
     newVelocity.y /= length;
 
     const velocity = {
-      x: lastVelocity.x * 0.97 + newVelocity.x * 0.03,
-      y: lastVelocity.y * 0.97 + newVelocity.y * 0.03,
+      x: lastVelocity.x * 0.965 + newVelocity.x * 0.035,
+      y: lastVelocity.y * 0.965 + newVelocity.y * 0.035,
     };
     const velocityMagnitude = Math.sqrt(
       Math.pow(velocity.x, 2) + Math.pow(velocity.y, 2)
@@ -386,16 +380,14 @@ const useStore = create<Store>((set, get) => ({
         velocity.x /= velocityLength;
         velocity.y /= velocityLength;
 
-        const playerVelocityThresholdRatio =
-          isActuallyCloseToPlayer &&
-          player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD * 0.5
-            ? player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD
-            : 0;
+        const playerVelocityThresholdRatio = isActuallyCloseToPlayer
+          ? Math.pow(player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD, 3)
+          : 0;
 
         velocity.x *= bird.attractionPoint
           ? lerp(
               Math.pow(audioDataArray[0] / 2048, 5) *
-                (isActuallyCloseToPlayer ? 8000 : 10000),
+                (isActuallyCloseToPlayer ? 8000 : 15000),
               1,
               Math.min(Math.max(playerVelocityThresholdRatio, 0), 1)
             )
@@ -404,7 +396,7 @@ const useStore = create<Store>((set, get) => ({
         velocity.y *= bird.attractionPoint
           ? lerp(
               Math.pow(audioDataArray[0] / 2048, 5) *
-                (isActuallyCloseToPlayer ? 8000 : 10000),
+                (isActuallyCloseToPlayer ? 8000 : 15000),
               1,
               Math.min(Math.max(playerVelocityThresholdRatio, 0), 1)
             )

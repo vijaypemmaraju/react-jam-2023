@@ -8,6 +8,7 @@ import useStore from "./useStore";
 import Player from "./Player";
 import { sound } from "@pixi/sound";
 import Rivals from "./Rivals";
+import { fanLoopFilters } from "./sounds";
 
 let isPlaying = false;
 
@@ -74,6 +75,13 @@ function App() {
         } else {
           lower.volume = 0;
         }
+      }
+      const fanLoop = sound.find("fan_loop");
+      if (fanLoop) {
+        const length = player.acceleration;
+        fanLoop.volume = 0.1 + (length / 500) * 0.2;
+        fanLoop.speed = length / 1000;
+        fanLoop.filters = fanLoopFilters;
       }
       ticker.speed = 1;
       sound.resumeAll();

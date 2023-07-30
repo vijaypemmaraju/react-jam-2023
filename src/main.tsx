@@ -41,14 +41,14 @@ export const Root = () => {
           <App />
         </Viewport>
         <Score />
-        <Minimap
+        {/* <Minimap
           x={window.innerWidth * 0.85}
           y={window.innerWidth * 0.01}
           width={window.innerWidth * 0.14}
           height={window.innerWidth * 0.1}
           color={0x131313}
           alpha={0.2}
-        />
+        /> */}
       </Stage>
       <div
         className="fixed w-[100vw] h-[100vh] flex items-center justify-center"
@@ -135,55 +135,80 @@ export const Root = () => {
                 <span className="loading loading-spinner loading-xs"></span>
               )}
             </motion.button>
-            <div className="mt-8 font-serif text-xl text-white">
-              <div className="text-center">Instructions</div>
-              <ol>
-                <li className="mt-2">
-                  1. You are{" "}
-                  <img src="./jay.png" className="inline-block w-6 rocking" />
-                </li>
-                <li className="mt-2">
-                  2. Use{" "}
-                  <img src="./cursor.png" className="inline-block w-6 rocking" />{" "}
-                  to guide{" "}
-                  <img
-                    src="./female_jay.png"
-                    className="inline-block w-6 rocking"
-                  />{" "}
-                  to{" "}
-                  <span className="text-blue-600 logo is-animation">
-                    <span>P</span>
-                    <span>a</span>
-                    <span>r</span>
-                    <span>t</span>
-                    <span>i</span>
-                    <span>e</span>
-                    <span>s</span>
-                  </span>
-                </li>
-                <li className="mt-2">
-                  3. Get more{" "}
-                  <img
-                    src="./female_jay.png"
-                    className="inline-block w-6 rocking"
-                  />{" "}
-                  than your <span className="text-red-600 logo is-animation">
-                    <span>R</span>
-                    <span>i</span>
-                    <span>v</span>
-                    <span>a</span>
-                    <span>l</span>
-                  </span>
-                  {' '}
-                  (<img src="./rival.png" className="inline-block w-6 rocking" />)
-                </li>
-              </ol>
-            </div>
+            <motion.button
+              className="mt-8 btn btn-secondary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "main" ? 1 : 0,
+                top: mode === "main" ? 0 : 100,
+              }}
+              onClick={() => {
+                (document.getElementById("my_modal_1") as HTMLDialogElement).showModal();
+              }}
+            >
+              How to Play
+            </motion.button>
+            <dialog id="my_modal_1" className="modal">
+              <form method="dialog" className="modal-box">
+                <h3 className="text-lg font-bold">How to Play</h3>
+                <div className="mt-8 font-serif text-xl">
+                  <ol>
+                    <li className="mt-2">
+                      1. Control{" "}
+                      <img src="./jay.png" className="inline-block w-6 rocking" /> with {" "}
+                      <img src="./cursor.png" className="inline-block w-6 rocking" />{" "}
+                    </li>
+                    <li className="mt-2">
+                      2. Guide{" "}
+                      <img
+                        src="./female_jay.png"
+                        className="inline-block w-6 rocking"
+                      />{" "}
+                      to{" "}
+                      <span className="text-blue-600 logo is-animation">
+                        <span>P</span>
+                        <span>a</span>
+                        <span>r</span>
+                        <span>t</span>
+                        <span>i</span>
+                        <span>e</span>
+                        <span>s</span>
+                      </span>
+                    </li>
+                    <li className="mt-2">
+                      3. Get more{" "}
+                      <img
+                        src="./female_jay.png"
+                        className="inline-block w-6 rocking"
+                      />{" "}
+                      than your <span className="text-red-600 logo is-animation">
+                        <span>R</span>
+                        <span>i</span>
+                        <span>v</span>
+                        <span>a</span>
+                        <span>l</span>
+                      </span>
+                      {' '}
+                      (<img src="./rival.png" className="inline-block w-6 rocking" />)
+                    </li>
+                  </ol>
+                </div>
+                <div className="modal-action">
+                  <button className="btn">Got it</button>
+                </div>
+              </form>
+            </dialog>
+
           </motion.div>
           <motion.div
             className="flex flex-col items-center justify-center"
             animate={{
               height: mode === "main" ? "auto" : 0,
+              pointerEvents: mode === "pause" ? "auto" : "none",
             }}
           >
             <motion.div

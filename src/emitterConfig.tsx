@@ -39,7 +39,7 @@ export const emitterConfig: EmitterConfigV3 = {
         alpha: {
           list: [
             {
-              value: 0.2,
+              value: 0.3,
               time: 0,
             },
             {
