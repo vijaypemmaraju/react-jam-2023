@@ -147,20 +147,48 @@ export const Root = () => {
                 top: mode === "main" ? 0 : 100,
               }}
               onClick={() => {
-                (document.getElementById("my_modal_1") as HTMLDialogElement).showModal();
+                (
+                  document.getElementById("howToPlayModal") as HTMLDialogElement
+                ).showModal();
               }}
             >
               How to Play
             </motion.button>
-            <dialog id="my_modal_1" className="modal">
+            <motion.button
+              className="mt-8 btn btn-secondary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "main" ? 1 : 0,
+                top: mode === "main" ? 0 : 100,
+              }}
+              onClick={() => {
+                (
+                  document.getElementById("hintsModal") as HTMLDialogElement
+                ).showModal();
+              }}
+            >
+              Hints
+            </motion.button>
+            <dialog id="howToPlayModal" className="modal">
               <form method="dialog" className="modal-box">
                 <h3 className="text-lg font-bold">How to Play</h3>
                 <div className="mt-8 font-serif text-xl">
                   <ol>
                     <li className="mt-2">
                       1. Control{" "}
-                      <img src="./jay.png" className="inline-block w-6 rocking" /> with {" "}
-                      <img src="./cursor.png" className="inline-block w-6 rocking" />{" "}
+                      <img
+                        src="./jay.png"
+                        className="inline-block w-6 rocking"
+                      />{" "}
+                      with{" "}
+                      <img
+                        src="./cursor.png"
+                        className="inline-block w-6 rocking"
+                      />{" "}
                     </li>
                     <li className="mt-2">
                       2. Guide{" "}
@@ -185,15 +213,20 @@ export const Root = () => {
                         src="./female_jay.png"
                         className="inline-block w-6 rocking"
                       />{" "}
-                      than your <span className="text-red-600 logo is-animation">
+                      than your{" "}
+                      <span className="text-red-600 logo is-animation">
                         <span>R</span>
                         <span>i</span>
                         <span>v</span>
                         <span>a</span>
                         <span>l</span>
-                      </span>
-                      {' '}
-                      (<img src="./rival.png" className="inline-block w-6 rocking" />)
+                      </span>{" "}
+                      (
+                      <img
+                        src="./rival.png"
+                        className="inline-block w-6 rocking"
+                      />
+                      )
                     </li>
                   </ol>
                 </div>
@@ -202,7 +235,70 @@ export const Root = () => {
                 </div>
               </form>
             </dialog>
-
+            <dialog id="hintsModal" className="modal">
+              <form method="dialog" className="modal-box">
+                <h3 className="text-lg font-bold">Hints</h3>
+                <div className="mt-8 font-serif text-xl">
+                  <div className="border collapse collapse-arrow border-base-300 bg-base-200">
+                    <input type="checkbox" />
+                    <div className="text-xl font-medium collapse-title">
+                      Basic Hints
+                    </div>
+                    <div className="collapse-content">
+                      <ul className="list-disc list-inside">
+                        <li>
+                          <img
+                            src="./female_jay.png"
+                            className="inline-block w-6 rocking"
+                          />{" "}
+                          get scared if you go too fast!
+                        </li>
+                        <li>
+                          <img
+                            src="./female_jay.png"
+                            className="inline-block w-6 rocking"
+                          />{" "} have a tendency to leave parties that aren't very active. Your presence helps.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="border collapse collapse-arrow border-base-300 bg-base-200">
+                    <input type="checkbox" />
+                    <div className="text-xl font-medium collapse-title">
+                      Advanced Hints
+                    </div>
+                    <div className="collapse-content">
+                      <ul className="list-disc list-inside">
+                        <li>
+                          Birds can be scared out of your <img
+                            src="./rival.png"
+                            className="inline-block w-6 rocking"
+                          />'s party.
+                        </li>
+                        <li>
+                          <img
+                            src="./female_jay.png"
+                            className="inline-block w-6 rocking"
+                          /> like traveling in large groups. It's difficult to influence smaller groups. If you have some stragglers, try to get some <img
+                            src="./female_jay.png"
+                            className="inline-block w-6 rocking"
+                          /> out of your party to help.
+                        </li>
+                        <li>
+                          If all else fails, you can always try scaring <img
+                            src="./female_jay.png"
+                            className="inline-block w-6 rocking"
+                          /> into your party.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-action">
+                  <button className="btn">Got it</button>
+                </div>
+              </form>
+            </dialog>
           </motion.div>
           <motion.div
             className="flex flex-col items-center justify-center"
@@ -268,12 +364,21 @@ export const Root = () => {
                 height: mode === "end" ? "auto" : 0,
               }}
             >
-              You got {birds.filter((bird) => bird.acquiredBy === "player").length}{" "} <img
+              You got{" "}
+              {birds.filter((bird) => bird.acquiredBy === "player").length}{" "}
+              <img
                 src="./female_jay.png"
                 className="inline-block w-6 rocking"
-              />s.
+              />
+              s.
               <br />
-              Your rival got {birds.filter((bird) => bird.acquiredBy === "rival").length}{" "} <img src="./female_jay.png" className="inline-block w-6 rocking" />s.
+              Your rival got{" "}
+              {birds.filter((bird) => bird.acquiredBy === "rival").length}{" "}
+              <img
+                src="./female_jay.png"
+                className="inline-block w-6 rocking"
+              />
+              s.
             </motion.div>
             <motion.div
               className="text-4xl text-white select-none"
