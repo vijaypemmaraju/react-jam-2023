@@ -58,9 +58,13 @@ function App() {
       const upper = sound.find("song_upper");
       const lower = sound.find("song_lower");
       if (upper && lower) {
-        setDifference(
-          upper.instances[0].progress - lower.instances[0].progress,
+        // check user agent to see if user is on mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(
+          navigator.userAgent,
         );
+        if (isMobile) {
+          setDifference(upper.instances[0].progress - lower.instances[0].progress)
+        }
         const zone = player.zone;
         if (zone) {
           const distanceFromZone = Math.sqrt(
