@@ -94,8 +94,8 @@ function Rivals() {
     (g: PixiGraphics, rival: Rival) => {
       if (!rival.zone) return;
       g.clear();
-      g.lineStyle(1, 0xff0000, 1);
-      g.beginFill(0xff0000, 0.1);
+      g.lineStyle(1, 0xe65665, 1);
+      g.beginFill(0xe65665, 0.1);
       const rect = new Circle(rival.zone.x, rival.zone.y, rival.zone.radius);
 
       // draw a perimeter on the rect with 100 points and perturb the points by the frequency data

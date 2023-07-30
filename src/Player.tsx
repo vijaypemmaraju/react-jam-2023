@@ -88,8 +88,8 @@ function Player() {
     (g: PixiGraphics) => {
       if (!player.zone) return;
       g.clear();
-      g.lineStyle(1, 0x0000ff, 1);
-      g.beginFill(0x0000ff, 0.1);
+      g.lineStyle(1, 0x566ae6, 1);
+      g.beginFill(0x566ae6, 0.1);
       const rect = new Circle(player.zone.x, player.zone.y, player.zone.radius);
 
       // draw a perimeter on the rect with 100 points and perturb the points by the frequency data
