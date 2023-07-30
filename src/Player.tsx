@@ -55,8 +55,8 @@ function Player() {
     setPlayer((player) => {
       // find a random rectangle within the world of 0, 0, to 3072, 3072
       player.zone = new Circle(
-        Math.random() * 1536 + (1536 - 512),
-        Math.random() * 1536 + (1536 - 512),
+        Math.random() * 2048 + 512,
+        Math.random() * 768 + (2304 - 512),
         256,
       );
     });

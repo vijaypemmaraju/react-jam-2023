@@ -47,11 +47,11 @@ function Rivals() {
           Math.sqrt(
             Math.pow(zone.x - player.zone!.x, 2) +
             Math.pow(zone.y - player.zone!.y, 2),
-          ) < 512
+          ) < 1024
         ) {
           zone = new Circle(
-            Math.random() * 1536 + (1536 - 512),
-            Math.random() * 1536 + (1536 - 512),
+            Math.random() * 2048 + 512,
+            Math.random() * 768 + (2304 - 512),
             256,
           );
         }
