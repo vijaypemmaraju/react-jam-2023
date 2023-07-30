@@ -254,12 +254,13 @@ export const Root = () => {
             }}
           >
             <motion.div
-              className="text-4xl text-white select-none"
+              className="text-4xl text-center text-white select-none"
               initial={{
                 opacity: 0,
                 position: "relative",
                 top: -100,
                 fontFamily: "Lumanosimo",
+                fontSize: 18,
               }}
               animate={{
                 opacity: mode === "end" ? 1 : 0,
@@ -267,7 +268,12 @@ export const Root = () => {
                 height: mode === "end" ? "auto" : 0,
               }}
             >
-              Game Over!
+              You got {birds.filter((bird) => bird.acquiredBy === "player").length}{" "} <img
+                src="./female_jay.png"
+                className="inline-block w-6 rocking"
+              />s.
+              <br />
+              Your rival got {birds.filter((bird) => bird.acquiredBy === "rival").length}{" "} <img src="./female_jay.png" className="inline-block w-6 rocking" />s.
             </motion.div>
             <motion.div
               className="text-4xl text-white select-none"

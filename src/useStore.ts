@@ -72,7 +72,7 @@ const useStore = create<Store>((set, get) => ({
   audioDataArray: new Uint8Array(0),
   setAudioDataArray: (audioDataArray) => set({ audioDataArray }),
   WEIGHTS: {
-    PLAYER_ATTRACTION: 20,
+    PLAYER_ATTRACTION: 30,
     CENTER_OF_SCREEN_ATTRACTION: 1,
     ATTRACTION_RADIUS: 300,
     FORCE_RADIUS: 400,
