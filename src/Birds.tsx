@@ -37,15 +37,18 @@ function Birds() {
     }
   }, [birds, setMode]);
 
+
+  const viewport = useStore((state) => state.viewport);
   useEffect(() => {
+    if (!viewport) return;
     setBirds((birds) => {
       for (let i = 0; i < 50; i++) {
         const random = Math.random();
         birds.push({
           id: i,
           position: {
-            x: Math.random() * app.screen.width,
-            y: Math.random() * app.screen.height,
+            x: Math.random() * viewport.width / 2 + viewport.width / 4,
+            y: Math.random() * viewport.height / 4 + viewport.height / 8,
           },
           velocity: {
             x: Math.random() * 2 - 1,
@@ -59,6 +62,10 @@ function Birds() {
             x: 0,
             y: 0,
           },
+          initialAttractionPoint: {
+            x: Math.random() * viewport.width,
+            y: Math.random() * viewport.height / 4 + viewport.height / 8,
+          },
           rotation: 0,
           acceleration: 0,
           torque: 0,
@@ -69,7 +76,7 @@ function Birds() {
         });
       }
     });
-  }, [app, setBirds]);
+  }, [app, setBirds, viewport]);
 
   useTick((delta) => {
     updateBirds(delta);

@@ -9,6 +9,7 @@ import Player from "./Player";
 import { sound } from "@pixi/sound";
 import Rivals from "./Rivals";
 import { fanLoopFilters } from "./sounds";
+import isMobile from "./utils/isMobile";
 
 let isPlaying = false;
 
@@ -19,8 +20,9 @@ function App() {
 
   useEffect(() => {
     window.addEventListener("resize", () => {
+      console.log("resize");
       app.renderer.resize(window.innerWidth, window.innerHeight);
-      viewport?.resize(window.innerWidth, window.innerHeight);
+      (window as any).viewport = viewport;
     });
   }, [app, viewport]);
 
@@ -43,6 +45,8 @@ function App() {
   const player = useStore((state) => state.player);
 
   useTick((_delta, ticker) => {
+    viewport?.resize(window.innerWidth, window.innerHeight);
+    viewport?.setZoom(isMobile ? 0.8 : 1);
     if (mode === "play") {
       if (!isPlaying) {
         sound.play("song_lower", {
@@ -58,10 +62,6 @@ function App() {
       const upper = sound.find("song_upper");
       const lower = sound.find("song_lower");
       if (upper && lower) {
-        // check user agent to see if user is on mobile
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(
-          navigator.userAgent,
-        );
         if (isMobile) {
           setDifference(upper.instances[0].progress - lower.instances[0].progress)
         }

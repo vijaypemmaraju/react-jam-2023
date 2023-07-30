@@ -7,6 +7,7 @@ import { Circle, ColorSource, utils } from "pixi.js";
 import { sound } from "@pixi/sound";
 import { fanLoopFilters } from "./sounds";
 import lerp from "./utils/lerp";
+import isMobile from "./utils/isMobile";
 
 type GameObject = {
   id?: number;
@@ -25,6 +26,7 @@ type GameObject = {
 };
 
 type Bird = GameObject & {
+  initialAttractionPoint?: { x: number; y: number };
   attractionPoint?: { x: number; y: number };
   acquiredBy?: "player" | "rival" | null;
 };
@@ -79,7 +81,7 @@ const useStore = create<Store>((set, get) => ({
     COHESION: 5,
     ALIGNMENT: 5,
     SEPARATION: 100,
-    HIGH_SPEED_THRESHOLD: 1300,
+    HIGH_SPEED_THRESHOLD: isMobile ? 400 : 500,
   },
   player: {
     position: { x: 400, y: 270 },
@@ -211,14 +213,10 @@ const useStore = create<Store>((set, get) => ({
     const { player, rivals, setBirds, WEIGHTS, audioDataArray } = get();
     setBirds((birds) => {
       let cohesion, alignment, separation, distance;
-      const center = { x: 0, y: 0 };
-      const root = document.querySelector("canvas");
-      const rect = root!.getBoundingClientRect();
-      center.x = rect.width / 2;
-      center.y = rect.height / 2;
 
       for (let i = 0; i < birds.length; i++) {
         const bird = birds[i];
+        const center = bird.initialAttractionPoint!;
         const suitors = bird.attractionPoint ? [] : [player, ...rivals];
         let closestSuitor = null;
         let closestDistance = Infinity;
@@ -278,8 +276,8 @@ const useStore = create<Store>((set, get) => ({
           closestSuitor === player &&
           closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
         ) {
-          closestSuitorAttraction.x *= -10;
-          closestSuitorAttraction.y *= -10;
+          closestSuitorAttraction.x *= -25;
+          closestSuitorAttraction.y *= -25;
         }
 
         const pointAttraction = {
@@ -329,7 +327,7 @@ const useStore = create<Store>((set, get) => ({
               (closestSuitor === player &&
               isActuallyCloseToPlayer &&
               player.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? 10
+                ? 100
                 : 1) *
               WEIGHTS.PLAYER_ATTRACTION +
             (bird.attractionPoint ? 1000000 : 1) * pointAttraction.x +
@@ -414,7 +412,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? closestSuitor.acceleration / 19
+                ? closestSuitor.acceleration / 9
                 : 25) +
                 Math.random() -
                 0.5),
@@ -424,7 +422,7 @@ const useStore = create<Store>((set, get) => ({
               delta *
               ((isCloseToPlayer &&
               closestSuitor.acceleration > WEIGHTS.HIGH_SPEED_THRESHOLD
-                ? closestSuitor.acceleration / 19
+                ? closestSuitor.acceleration / 9
                 : 25) +
                 Math.random() -
                 0.5),
