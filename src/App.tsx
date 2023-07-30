@@ -84,10 +84,10 @@ function App() {
         fanLoop.filters = fanLoopFilters;
       }
       ticker.speed = 1;
-      sound.resumeAll();
+      sound.unmuteAll();
     } else {
       ticker.speed = 0;
-      sound.pauseAll();
+      sound.muteAll();
     }
   });
 

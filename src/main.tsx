@@ -21,6 +21,9 @@ export const Root = () => {
       if (e.key === "Escape" && mode === "play") {
         useStore.getState().setMode("pause");
       }
+      if (e.key === "Escape" && mode === "pause") {
+        useStore.getState().setMode("play");
+      }
     };
     window.addEventListener("keydown", handler);
 
@@ -340,6 +343,46 @@ export const Root = () => {
               }}
             >
               Resume
+            </motion.button>
+            <motion.button
+              className="mt-8 btn btn-secondary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "pause" ? 1 : 0,
+                top: mode === "pause" ? 0 : -100,
+                height: mode === "pause" ? "auto" : 0,
+              }}
+              onClick={() => {
+                (
+                  document.getElementById("hintsModal") as HTMLDialogElement
+                ).showModal();
+              }}
+            >
+              Hints
+            </motion.button>
+            <motion.button
+              className="mt-8 btn btn-secondary"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "pause" ? 1 : 0,
+                top: mode === "pause" ? 0 : -100,
+                height: mode === "pause" ? "auto" : 0,
+              }}
+              onClick={() => {
+                (
+                  document.getElementById("howToPlayModal") as HTMLDialogElement
+                ).showModal();
+              }}
+            >
+              How to Play
             </motion.button>
           </motion.div>
           <motion.div

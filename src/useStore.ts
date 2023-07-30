@@ -381,7 +381,7 @@ const useStore = create<Store>((set, get) => ({
         velocity.y /= velocityLength;
 
         const playerVelocityThresholdRatio = isActuallyCloseToPlayer
-          ? Math.pow(player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD, 3)
+          ? Math.pow(player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD, 4)
           : 0;
 
         velocity.x *= bird.attractionPoint
