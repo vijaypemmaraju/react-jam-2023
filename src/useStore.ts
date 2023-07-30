@@ -79,7 +79,7 @@ const useStore = create<Store>((set, get) => ({
     COHESION: 5,
     ALIGNMENT: 5,
     SEPARATION: 100,
-    HIGH_SPEED_THRESHOLD: 250,
+    HIGH_SPEED_THRESHOLD: 1300,
   },
   player: {
     position: { x: 400, y: 270 },
@@ -381,7 +381,10 @@ const useStore = create<Store>((set, get) => ({
         velocity.y /= velocityLength;
 
         const playerVelocityThresholdRatio = isActuallyCloseToPlayer
-          ? Math.pow(player.acceleration / WEIGHTS.HIGH_SPEED_THRESHOLD, 4)
+          ? Math.pow(
+              player.acceleration / (WEIGHTS.HIGH_SPEED_THRESHOLD / 2),
+              4
+            )
           : 0;
 
         velocity.x *= bird.attractionPoint
