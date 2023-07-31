@@ -55,7 +55,7 @@ function App() {
       }
       return blur + diff * delta;
     });
-    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.5;
+    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.3;
     setZoom((zoom) => {
       const diff = destinationZoom - zoom;
       return zoom + diff * 0.05 * delta;
@@ -99,7 +99,7 @@ function App() {
       const fanLoop = sound.find("fan_loop");
       if (fanLoop) {
         const length = player.acceleration;
-        fanLoop.volume = 0.1 + (length / 500) * 0.2;
+        fanLoop.volume = 0.1 + (length / 500) * 0.15;
         fanLoop.speed = length / 1000;
         fanLoop.filters = fanLoopFilters;
       }
