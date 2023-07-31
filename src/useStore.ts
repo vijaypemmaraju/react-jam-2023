@@ -633,7 +633,7 @@ const useStore = create<Store>((set, get) => ({
               0.1 +
             WEIGHTS.PLAYER_ATTRACTION +
             pointAttraction.x +
-            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION * 1.25 +
             cohesion.x * WEIGHTS.COHESION +
             alignment.x * WEIGHTS.ALIGNMENT +
             separation.x * WEIGHTS.SEPARATION,
@@ -643,7 +643,7 @@ const useStore = create<Store>((set, get) => ({
               0.1 +
             WEIGHTS.PLAYER_ATTRACTION +
             pointAttraction.y +
-            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION +
+            WEIGHTS.CENTER_OF_SCREEN_ATTRACTION * 1.25 +
             cohesion.y * WEIGHTS.COHESION +
             alignment.y * WEIGHTS.ALIGNMENT +
             separation.y * WEIGHTS.SEPARATION,
