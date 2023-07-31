@@ -55,7 +55,7 @@ function App() {
       }
       return blur + diff * delta;
     });
-    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.3;
+    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.5;
     setZoom((zoom) => {
       const diff = destinationZoom - zoom;
       return zoom + diff * 0.05 * delta;
