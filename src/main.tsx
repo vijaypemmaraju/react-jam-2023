@@ -359,6 +359,10 @@ export const Root = () => {
                   </p>
                   <br />
                   <p>
+                    <strong>Technologies</strong> <br /> Built with Pixi.js and React
+                  </p>
+                  <br />
+                  <p>
                     <strong>Background Art</strong>
                     <br />
                     Midjourney AI
