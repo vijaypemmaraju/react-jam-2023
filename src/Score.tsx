@@ -1,21 +1,15 @@
 import { FC } from "react";
 import { Graphics, Text } from "@pixi/react";
-import { TextStyle, Graphics as PixiGraphics, TextMetrics } from "pixi.js";
+import { TextStyle, Graphics as PixiGraphics } from "pixi.js";
 import useStore from "./useStore";
 
 const Score: FC = () => {
   const birds = useStore((state) => state.birds);
   const mode = useStore((state) => state.mode);
-  const viewport = useStore((state) => state.viewport);
 
   if (mode !== "play") {
     return null;
   }
-
-  const text = `0`;
-  const style = new TextStyle({ fill: 0x566ae6, fontFamily: 'Lumanosimo', fontSize: '2rem' });
-
-  const width = TextMetrics.measureText(text, style).width;
 
   const drawBackground = (g: PixiGraphics) => {
     g.clear();
@@ -23,21 +17,24 @@ const Score: FC = () => {
     g.beginFill(0xaaaaaa);
     g.drawRect(25, 25, 80, 100);
     g.endFill();
-  }
-
+  };
 
   return (
     <>
       <Graphics draw={drawBackground} />
       <Text
-        text={birds.filter((bird) => bird.acquiredBy === "player").length.toString()}
-        style={new TextStyle({ fill: 0x566ae6, fontFamily: 'Lumanosimo' })}
+        text={birds
+          .filter((bird) => bird.acquiredBy === "player")
+          .length.toString()}
+        style={new TextStyle({ fill: 0x566ae6, fontFamily: "Lumanosimo" })}
         x={50}
         y={35}
       />
       <Text
-        text={birds.filter((bird) => bird.acquiredBy === "rival").length.toString()}
-        style={new TextStyle({ fill: 0xe65665, fontFamily: 'Lumanosimo' })}
+        text={birds
+          .filter((bird) => bird.acquiredBy === "rival")
+          .length.toString()}
+        style={new TextStyle({ fill: 0xe65665, fontFamily: "Lumanosimo" })}
         x={50}
         y={75}
       />

@@ -6,7 +6,6 @@ import "./index.css";
 import Viewport from "./Viewport";
 import { Assets } from "pixi.js";
 import "./sounds";
-import Minimap from "./Minimap";
 import useStore from "./useStore";
 import { useEffect, useState } from "react";
 import Score from "./Score";
@@ -44,14 +43,6 @@ export const Root = () => {
           <App />
         </Viewport>
         <Score />
-        {/* <Minimap
-          x={window.innerWidth * 0.85}
-          y={window.innerWidth * 0.01}
-          width={window.innerWidth * 0.14}
-          height={window.innerWidth * 0.1}
-          color={0x131313}
-          alpha={0.2}
-        /> */}
       </Stage>
       <div
         className="fixed w-[100vw] h-[100vh] flex items-center justify-center"
@@ -125,7 +116,7 @@ export const Root = () => {
                   Assets.load("female_jay_sheet.json"),
                   Assets.load("rival_sheet.json"),
                   Assets.load(
-                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png"
+                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png",
                   ),
                 ]).then(() => {
                   useStore.getState().setMode("play");
@@ -260,7 +251,9 @@ export const Root = () => {
                           <img
                             src="./female_jay.png"
                             className="inline-block w-6 rocking"
-                          />{" "} have a tendency to leave parties that aren't very active. Your presence helps.
+                          />{" "}
+                          have a tendency to leave parties that aren't very
+                          active. Your presence helps.
                         </li>
                       </ul>
                     </div>
@@ -273,25 +266,34 @@ export const Root = () => {
                     <div className="collapse-content">
                       <ul className="list-disc list-inside">
                         <li>
-                          Birds can be scared out of your <img
+                          Birds can be scared out of your{" "}
+                          <img
                             src="./rival.png"
                             className="inline-block w-6 rocking"
-                          />'s party.
+                          />
+                          's party.
                         </li>
                         <li>
                           <img
                             src="./female_jay.png"
                             className="inline-block w-6 rocking"
-                          /> like traveling in large groups. It's difficult to influence smaller groups. If you have some stragglers, try to get some <img
+                          />{" "}
+                          like traveling in large groups. It's difficult to
+                          influence smaller groups. If you have some stragglers,
+                          try to get some{" "}
+                          <img
                             src="./female_jay.png"
                             className="inline-block w-6 rocking"
-                          /> out of your party to help.
+                          />{" "}
+                          out of your party to help.
                         </li>
                         <li>
-                          If all else fails, you can always try scaring <img
+                          If all else fails, you can always try scaring{" "}
+                          <img
                             src="./female_jay.png"
                             className="inline-block w-6 rocking"
-                          /> into your party.
+                          />{" "}
+                          into your party.
                         </li>
                       </ul>
                     </div>
@@ -438,7 +440,7 @@ export const Root = () => {
               }}
             >
               {birds.filter((bird) => bird.acquiredBy === "player").length >
-                birds.filter((bird) => bird.acquiredBy === "rival").length
+              birds.filter((bird) => bird.acquiredBy === "rival").length
                 ? "You won!"
                 : "You lost!"}
             </motion.div>

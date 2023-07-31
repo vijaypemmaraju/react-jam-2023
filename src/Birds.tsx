@@ -1,6 +1,5 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { useTick, useApp, AnimatedSprite } from "@pixi/react";
-import { filters, sound } from "@pixi/sound";
 import { Assets, Texture } from "pixi.js";
 import { Fragment, useEffect, useState } from "react";
 import "./App.css";
@@ -37,7 +36,6 @@ function Birds() {
     }
   }, [birds, setMode]);
 
-
   const viewport = useStore((state) => state.viewport);
   useEffect(() => {
     if (!viewport) return;
@@ -47,8 +45,8 @@ function Birds() {
         birds.push({
           id: i,
           position: {
-            x: Math.random() * viewport.width / 2 + viewport.width / 4,
-            y: Math.random() * viewport.height / 4 + viewport.height / 8,
+            x: (Math.random() * viewport.width) / 2 + viewport.width / 4,
+            y: (Math.random() * viewport.height) / 4 + viewport.height / 8,
           },
           velocity: {
             x: Math.random() * 2 - 1,
@@ -64,13 +62,14 @@ function Birds() {
           },
           initialAttractionPoint: {
             x: Math.random() * viewport.width,
-            y: Math.random() * viewport.height / 4 + viewport.height / 8,
+            y: (Math.random() * viewport.height) / 4 + viewport.height / 8,
           },
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
           timeUntilNextFlapSound: 0,
           acquiredBy: null,
         });

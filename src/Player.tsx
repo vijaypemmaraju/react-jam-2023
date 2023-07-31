@@ -98,10 +98,11 @@ function Player() {
       for (let i = 0; i < 100; i++) {
         const angle = (i / 100) * Math.PI * 2;
 
-        const perturbation = (dataArray[
-          Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
-        ] /
-          255) *
+        const perturbation =
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
           200;
         const x = center.x + Math.cos(angle) * (rect.radius + perturbation);
         const y = center.y + Math.sin(angle) * (rect.radius + perturbation);
@@ -120,8 +121,9 @@ function Player() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
-      })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
+      (dataArray[20] || 0) % 255
+    })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 

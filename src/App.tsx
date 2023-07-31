@@ -1,5 +1,5 @@
-import { Sprite, Text, useApp, useTick } from "@pixi/react";
-import { BlurFilter, TextStyle } from "pixi.js";
+import { Sprite, useApp, useTick } from "@pixi/react";
+import { BlurFilter } from "pixi.js";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Birds from "./Birds";
@@ -22,7 +22,6 @@ function App() {
     window.addEventListener("resize", () => {
       console.log("resize");
       app.renderer.resize(window.innerWidth, window.innerHeight);
-      (window as any).viewport = viewport;
     });
   }, [app, viewport]);
 
@@ -41,12 +40,27 @@ function App() {
     }
   }, [mode]);
 
-  const [difference, setDifference] = useState(0);
+  const [, setDifference] = useState(0);
+  const [blur, setBlur] = useState(64);
+  const [zoom, setZoom] = useState(isMobile ? 0.8 : 1);
   const player = useStore((state) => state.player);
 
-  useTick((_delta, ticker) => {
+  useTick((delta, ticker) => {
     viewport?.resize(window.innerWidth, window.innerHeight);
-    viewport?.setZoom(isMobile ? 0.8 : 1);
+    const destinationBlur = hasStarted ? 16 : 64;
+    setBlur((blur) => {
+      const diff = destinationBlur - blur;
+      if (Math.abs(diff) < 0.01) {
+        return destinationBlur;
+      }
+      return blur + diff * delta;
+    });
+    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.5;
+    setZoom((zoom) => {
+      const diff = destinationZoom - zoom;
+      return zoom + diff * 0.05 * delta;
+    });
+    viewport?.setZoom(zoom);
     if (mode === "play") {
       if (!isPlaying) {
         sound.play("song_lower", {
@@ -63,13 +77,15 @@ function App() {
       const lower = sound.find("song_lower");
       if (upper && lower) {
         if (isMobile) {
-          setDifference(upper.instances[0].progress - lower.instances[0].progress)
+          setDifference(
+            upper.instances[0].progress - lower.instances[0].progress,
+          );
         }
         const zone = player.zone;
         if (zone) {
           const distanceFromZone = Math.sqrt(
             Math.pow(zone.x - player.position.x, 2) +
-            Math.pow(zone.y - player.position.y, 2),
+              Math.pow(zone.y - player.position.y, 2),
           );
           const maxDistance = 700;
           lower.volume = Math.max(
@@ -101,10 +117,10 @@ function App() {
   return (
     <>
       <Sprite
-        image="elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png"
-        filters={[new BlurFilter(32, 32, 1, 5)]}
+        image="elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a.png"
+        filters={[new BlurFilter(blur, blur, 1, 5)]}
         tint={0xeeeeee}
-        scale={{ x: 1.5, y: 1.5 }}
+        scale={{ x: 4, y: 4 }}
         anchor={0}
       />
       {hasStarted && (

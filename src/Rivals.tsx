@@ -1,7 +1,5 @@
 import { Emitter as PixiEmitter } from "@pixi/particle-emitter";
 import { useTick, useApp, AnimatedSprite, Graphics, Text } from "@pixi/react";
-import { filters, sound } from "@pixi/sound";
-import { WebAudioContext } from "@pixi/sound/lib/webaudio";
 import {
   Graphics as PixiGraphics,
   Assets,
@@ -46,7 +44,7 @@ function Rivals() {
           !zone ||
           Math.sqrt(
             Math.pow(zone.x - player.zone!.x, 2) +
-            Math.pow(zone.y - player.zone!.y, 2),
+              Math.pow(zone.y - player.zone!.y, 2),
           ) < 1024
         ) {
           zone = new Circle(
@@ -77,8 +75,9 @@ function Rivals() {
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
+            255 - random * 100
+          })`,
           timeUntilNextFlapSound: 0,
           zone,
         });
@@ -103,10 +102,11 @@ function Rivals() {
       const points: Point[] = [];
       for (let i = 0; i < 100; i++) {
         const angle = (i / 100) * Math.PI * 2;
-        const perturbation = (dataArray[
-          Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
-        ] /
-          255) *
+        const perturbation =
+          (dataArray[
+            Math.floor((i + dataArray.length / 6) % (dataArray.length / 2))
+          ] /
+            255) *
           200;
         const x = center.x + Math.cos(angle) * (rect.radius + perturbation);
         const y = center.y + Math.sin(angle) * (rect.radius + perturbation);
@@ -124,8 +124,9 @@ function Rivals() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
-      })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
+      (dataArray[20] || 0) % 255
+    })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 
