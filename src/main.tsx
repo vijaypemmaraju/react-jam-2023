@@ -167,6 +167,25 @@ export const Root = () => {
             >
               Hints
             </motion.button>
+            <motion.button
+              className="mt-8 btn btn-neutral"
+              initial={{
+                opacity: 0,
+                position: "relative",
+                top: 100,
+              }}
+              animate={{
+                opacity: mode === "main" ? 1 : 0,
+                top: mode === "main" ? 0 : 100,
+              }}
+              onClick={() => {
+                (
+                  document.getElementById("creditsModal") as HTMLDialogElement
+                ).showModal();
+              }}
+            >
+              Credits
+            </motion.button>
             <dialog id="howToPlayModal" className="modal">
               <form method="dialog" className="modal-box">
                 <h3 className="text-lg font-bold">How to Play</h3>
@@ -298,6 +317,27 @@ export const Root = () => {
                       </ul>
                     </div>
                   </div>
+                </div>
+                <div className="modal-action">
+                  <button className="btn">Got it</button>
+                </div>
+              </form>
+            </dialog>
+            <dialog id="creditsModal" className="modal">
+              <form method="dialog" className="modal-box">
+                <h3 className="text-lg font-bold">Credits</h3>
+                <div className="mt-8 font-serif text-xl">
+                  <p>
+                    <strong>Programming, Music, and Sprite Art</strong> <br /> Vijay Pemmaraju
+                  </p>
+                  <br />
+                  <p>
+                    <strong>Background Art</strong>
+                    <br />
+                    Midjourney AI
+                    <br />
+                    <p className="text-sm">A special thank you to the uncredited artists whose work went into the training data.</p>
+                  </p>
                 </div>
                 <div className="modal-action">
                   <button className="btn">Got it</button>

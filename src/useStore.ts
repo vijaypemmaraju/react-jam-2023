@@ -453,7 +453,7 @@ const useStore = create<Store>((set, get) => ({
             if (!bird.attractionPoint) {
               sound.play(alias, {
                 volume: 0.02 + Math.random() * 0.02,
-                speed: 0.9 + Math.random() * 0.2 - 0.1,
+                speed: 0.95 + Math.random() * 0.2 - 0.1,
               });
             }
             bird.attractionPoint = {
