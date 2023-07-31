@@ -116,7 +116,7 @@ export const Root = () => {
                   Assets.load("female_jay_sheet.json"),
                   Assets.load("rival_sheet.json"),
                   Assets.load(
-                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a-jF59VqmRb-transformed.png",
+                    "elevatelol_top_down_pixel_art_town_view_from_directly_above_2f835eab-997a-4488-87b5-e690850e337a.png",
                   ),
                 ]).then(() => {
                   useStore.getState().setMode("play");
@@ -440,7 +440,7 @@ export const Root = () => {
               }}
             >
               {birds.filter((bird) => bird.acquiredBy === "player").length >
-              birds.filter((bird) => bird.acquiredBy === "rival").length
+                birds.filter((bird) => bird.acquiredBy === "rival").length
                 ? "You won!"
                 : "You lost!"}
             </motion.div>

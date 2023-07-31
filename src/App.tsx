@@ -47,7 +47,7 @@ function App() {
 
   useTick((delta, ticker) => {
     viewport?.resize(window.innerWidth, window.innerHeight);
-    const destinationBlur = hasStarted ? 16 : 64;
+    const destinationBlur = hasStarted ? 32 : 64;
     setBlur((blur) => {
       const diff = destinationBlur - blur;
       if (Math.abs(diff) < 0.01) {
@@ -85,7 +85,7 @@ function App() {
         if (zone) {
           const distanceFromZone = Math.sqrt(
             Math.pow(zone.x - player.position.x, 2) +
-              Math.pow(zone.y - player.position.y, 2),
+            Math.pow(zone.y - player.position.y, 2),
           );
           const maxDistance = 700;
           lower.volume = Math.max(
