@@ -20,7 +20,6 @@ function App() {
 
   useEffect(() => {
     window.addEventListener("resize", () => {
-      console.log("resize");
       app.renderer.resize(window.innerWidth, window.innerHeight);
     });
   }, [app, viewport]);
