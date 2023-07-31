@@ -1,3 +1,4 @@
+import jayFacts from './jayFacts.json';
 import { motion } from "framer-motion";
 import { Stage } from "@pixi/react";
 import { createRoot } from "react-dom/client";
@@ -14,6 +15,14 @@ export const Root = () => {
   const mode = useStore((state) => state.mode);
   const [isLoading, setIsLoading] = useState(false);
   const birds = useStore((state) => state.birds);
+  const [randomFact, setRandomFact] = useState(Math.floor(Math.random() * jayFacts.length));
+
+  useEffect(() => {
+    if (localStorage.getItem('hasLoadedBefore') !== 'true') {
+      setRandomFact(0);
+      localStorage.setItem('hasLoadedBefore', 'true');
+    }
+  }, [])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -96,6 +105,24 @@ export const Root = () => {
               <span>o</span>
               <span>c</span>
               <span>k</span>
+            </motion.div>
+            <motion.div>
+              {mode === "main" && (
+                <motion.div
+                  className="text-base text-white"
+                  initial={{
+                    opacity: 0,
+                    position: "relative",
+                    top: 100,
+                  }}
+                  animate={{
+                    opacity: mode === "main" ? 1 : 0,
+                    top: mode === "main" ? 0 : 100,
+                  }}
+                >
+                  <em>{jayFacts[randomFact]}</em>
+                </motion.div>
+              )}
             </motion.div>
             <motion.button
               className="mt-8 btn btn-primary"
@@ -189,7 +216,7 @@ export const Root = () => {
             <dialog id="howToPlayModal" className="modal">
               <form method="dialog" className="modal-box">
                 <h3 className="text-lg font-bold">How to Play</h3>
-                <div className="mt-8 font-serif text-xl">
+                <div className="mt-8 text-xl">
                   <ol>
                     <li className="mt-2">
                       1. Control{" "}
@@ -326,7 +353,7 @@ export const Root = () => {
             <dialog id="creditsModal" className="modal">
               <form method="dialog" className="modal-box">
                 <h3 className="text-lg font-bold">Credits</h3>
-                <div className="mt-8 font-serif text-xl">
+                <div className="mt-8 text-xl">
                   <p>
                     <strong>Programming, Music, and Sprite Art</strong> <br /> Vijay Pemmaraju
                   </p>
@@ -337,6 +364,16 @@ export const Root = () => {
                     Midjourney AI
                     <br />
                     <p className="text-sm">A special thank you to the uncredited artists whose work went into the training data.</p>
+                  </p>
+                  <br />
+                  <p>
+                    <strong>Other AI Tools</strong>
+                    <br />
+                    Github Copilot
+                    <p className="text-sm">For general programming tasks.</p>
+                    <br />
+                    ChatGPT
+                    <p className="text-sm">To generate the jay facts.</p>
                   </p>
                 </div>
                 <div className="modal-action">
