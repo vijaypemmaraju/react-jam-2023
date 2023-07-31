@@ -46,7 +46,7 @@ function Birds() {
           id: i,
           position: {
             x: (Math.random() * viewport.width) / 2 + viewport.width / 4,
-            y: (Math.random() * viewport.height) / 4 + viewport.height / 8,
+            y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
           },
           velocity: {
             x: Math.random() * 2 - 1,
@@ -62,14 +62,13 @@ function Birds() {
           },
           initialAttractionPoint: {
             x: Math.random() * viewport.width,
-            y: (Math.random() * viewport.height) / 4 + viewport.height / 8,
+            y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
           },
           rotation: 0,
           acceleration: 0,
           torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
-            255 - random * 100
-          })`,
+          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+            })`,
           timeUntilNextFlapSound: 0,
           acquiredBy: null,
         });
