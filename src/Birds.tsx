@@ -39,41 +39,42 @@ function Birds() {
   const viewport = useStore((state) => state.viewport);
   useEffect(() => {
     if (!viewport) return;
-    setBirds((birds) => {
-      for (let i = 0; i < 50; i++) {
-        const random = Math.random();
-        birds.push({
-          id: i,
-          position: {
-            x: (Math.random() * viewport.width) / 2 + viewport.width / 4,
-            y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
-          },
-          velocity: {
-            x: Math.random() * 2 - 1,
-            y: Math.random() * 2 - 1,
-          },
-          lastVelocity: {
-            x: 0,
-            y: 0,
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          },
-          initialAttractionPoint: {
-            x: Math.random() * viewport.width,
-            y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
-          },
-          rotation: 0,
-          acceleration: 0,
-          torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
-            })`,
-          timeUntilNextFlapSound: 0,
-          acquiredBy: null,
-        });
-      }
-    });
+    const birds = [];
+    for (let i = 0; i < 50; i++) {
+      const random = Math.random();
+      birds.push({
+        id: i,
+        position: {
+          x: (Math.random() * viewport.width) / 2 + viewport.width / 4,
+          y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
+        },
+        velocity: {
+          x: Math.random() * 2 - 1,
+          y: Math.random() * 2 - 1,
+        },
+        lastVelocity: {
+          x: 0,
+          y: 0,
+        },
+        destination: {
+          x: 0,
+          y: 0,
+        },
+        initialAttractionPoint: {
+          x: Math.random() * viewport.width,
+          y: (Math.random() * viewport.height) / 4 + viewport.height / 6,
+        },
+        rotation: 0,
+        acceleration: 0,
+        torque: 0,
+        tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+          })`,
+        timeUntilNextFlapSound: 0,
+        acquiredBy: null,
+      });
+    }
+
+    setBirds(birds);
   }, [app, setBirds, viewport]);
 
   useTick((delta) => {
@@ -89,9 +90,10 @@ function Birds() {
           <Emitter
             config={emitterConfig}
             onCreate={(emitter: PixiEmitter) =>
-              setBirds((birds) => {
-                birds[i].emitter = emitter;
-              })
+              setBirds(birds.map((bird) => ({
+                ...bird,
+                emitter,
+              })))
             }
           />
           <AnimatedSprite

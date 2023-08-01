@@ -9,7 +9,7 @@ import {
   Texture,
   Circle,
 } from "pixi.js";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import Emitter from "./Emitter";
 import { emitterConfig } from "./emitterConfig";
@@ -52,28 +52,33 @@ function Player() {
       loop: true,
       filters: [new filters.TelephoneFilter(), new filters.ReverbFilter()],
     });
-    setPlayer((player) => {
-      // find a random rectangle within the world of 0, 0, to 3072, 3072
-      player.zone = new Circle(
-        Math.random() * 2048 + 512,
-        Math.random() * 768 + (2304 - 512),
-        256,
-      );
-    });
+    const newPlayer = { ...player };
+    newPlayer.zone = new Circle(
+      Math.random() * 2048 + 512,
+      Math.random() * 768 + (2304 - 512),
+      256,
+    );
+
+    setPlayer(newPlayer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPlayer]);
 
   const ref = useRef<PixiSprite | null>(null);
 
-  useTick((delta) => {
+  const rect = useMemo(() => {
     const root = document.querySelector("canvas");
+    return root?.getBoundingClientRect();
+  }, []);
+
+  useTick((delta) => {
     const pointer = app.renderer.plugins.interaction.pointer;
-    const rect = root?.getBoundingClientRect();
     const pos = viewport?.toLocal(new Point(pointer.x, pointer.y));
     const x = (pos?.x || 0) - (rect?.x || 0);
     const y = (pos?.y || 0) - (rect?.y || 0);
 
-    setPlayer((player) => {
-      player.destination = { x, y };
+    setPlayer({
+      ...player,
+      destination: { x, y },
     });
     updatePlayer(delta);
     const context = sound.context as WebAudioContext;
@@ -121,9 +126,8 @@ function Player() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
-      (dataArray[20] || 0) % 255
-    })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 
@@ -132,8 +136,9 @@ function Player() {
       <Emitter
         config={emitterConfig}
         onCreate={(emitter: PixiEmitter) =>
-          setPlayer((player) => {
-            player.emitter = emitter;
+          setPlayer({
+            ...player,
+            emitter,
           })
         }
       />

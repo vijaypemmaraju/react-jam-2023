@@ -41,20 +41,20 @@ function App() {
 
   const [, setDifference] = useState(0);
   const [blur, setBlur] = useState(64);
-  const [zoom, setZoom] = useState(isMobile ? 0.8 : 1);
+  const [zoom, setZoom] = useState(isMobile ? 0.8 : 0.7);
   const player = useStore((state) => state.player);
 
   useTick((delta, ticker) => {
     viewport?.resize(window.innerWidth, window.innerHeight);
-    const destinationBlur = hasStarted ? 32 : 64;
-    setBlur((blur) => {
-      const diff = destinationBlur - blur;
-      if (Math.abs(diff) < 0.01) {
-        return destinationBlur;
-      }
-      return blur + diff * delta;
-    });
-    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.5;
+    // const destinationBlur = hasStarted ? 32 : 64;
+    // setBlur((blur) => {
+    //   const diff = destinationBlur - blur;
+    //   if (Math.abs(diff) < 0.01) {
+    //     return destinationBlur;
+    //   }
+    //   return blur + diff * delta;
+    // });
+    const destinationZoom = hasStarted ? (isMobile ? 0.8 : 1) : 0.7;
     setZoom((zoom) => {
       const diff = destinationZoom - zoom;
       return zoom + diff * 0.05 * delta;
@@ -103,10 +103,8 @@ function App() {
         fanLoop.filters = fanLoopFilters;
       }
       ticker.speed = 1;
-      sound.unmuteAll();
     } else {
       ticker.speed = 0;
-      sound.muteAll();
     }
   });
 

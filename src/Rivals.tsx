@@ -36,53 +36,53 @@ function Rivals() {
   }, []);
 
   useEffect(() => {
-    setRivals((rivals) => {
-      for (let i = 0; i < 1; i++) {
-        // generate a rectangle that does not overlap with player.zone
-        let zone: Circle | null = null;
-        while (
-          !zone ||
-          Math.sqrt(
-            Math.pow(zone.x - player.zone!.x, 2) +
-              Math.pow(zone.y - player.zone!.y, 2),
-          ) < 1024
-        ) {
-          zone = new Circle(
-            Math.random() * 2048 + 512,
-            Math.random() * 768 + (2304 - 512),
-            256,
-          );
-        }
-        const random = Math.random();
-        rivals.push({
-          id: i,
-          position: {
-            x: -100,
-            y: -100,
-          },
-          velocity: {
-            x: Math.random() * 2 - 1,
-            y: Math.random() * 2 - 1,
-          },
-          lastVelocity: {
-            x: 0,
-            y: 0,
-          },
-          destination: {
-            x: 0,
-            y: 0,
-          },
-          rotation: 0,
-          acceleration: 0,
-          torque: 0,
-          tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${
-            255 - random * 100
-          })`,
-          timeUntilNextFlapSound: 0,
-          zone,
-        });
+    const rivals = [];
+    for (let i = 0; i < 1; i++) {
+      // generate a rectangle that does not overlap with player.zone
+      let zone: Circle | null = null;
+      while (
+        !zone ||
+        Math.sqrt(
+          Math.pow(zone.x - player.zone!.x, 2) +
+          Math.pow(zone.y - player.zone!.y, 2),
+        ) < 1024
+      ) {
+        zone = new Circle(
+          Math.random() * 2048 + 512,
+          Math.random() * 768 + (2304 - 512),
+          256,
+        );
       }
-    });
+      const random = Math.random();
+      rivals.push({
+        id: i,
+        position: {
+          x: -100,
+          y: -100,
+        },
+        velocity: {
+          x: Math.random() * 2 - 1,
+          y: Math.random() * 2 - 1,
+        },
+        lastVelocity: {
+          x: 0,
+          y: 0,
+        },
+        destination: {
+          x: 0,
+          y: 0,
+        },
+        rotation: 0,
+        acceleration: 0,
+        torque: 0,
+        tint: `rgb(${255 - random * 100}, ${255 - random * 100}, ${255 - random * 100
+          })`,
+        timeUntilNextFlapSound: 0,
+        zone,
+      });
+    }
+
+    setRivals(rivals);
   }, [app, player.zone, setRivals]);
 
   useTick((delta) => {
@@ -124,9 +124,8 @@ function Rivals() {
   const text = "Party Zone";
 
   const style = new TextStyle({
-    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${
-      (dataArray[20] || 0) % 255
-    })`,
+    fill: `rgb(${(dataArray[0] || 0) % 255}, ${(dataArray[10] || 0) % 255}, ${(dataArray[20] || 0) % 255
+      })`,
   });
   const metrics = TextMetrics.measureText(text, style);
 
@@ -137,9 +136,10 @@ function Rivals() {
           <Emitter
             config={emitterConfig}
             onCreate={(emitter: PixiEmitter) =>
-              setRivals((rivals) => {
-                rivals[i].emitter = emitter;
-              })
+              setRivals(rivals.map((rival) => ({
+                ...rival,
+                emitter,
+              })))
             }
           />
           <AnimatedSprite
